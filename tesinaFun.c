@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 #include "tesina.h"
 
 /* Funzione di hash che data una stringa ne restiusce il corrispetivo intero */
@@ -32,9 +33,17 @@ struct var *lookup(char *nome) {
 
         //Ho trovato "una cella" della tabella vuota, qunindi istanzio la variabile
         if(!variabile->nome) {
-
+            
+            variabile->varType = NULL;
             variabile->nome = strdup(nome);
             variabile->valore = 0;
+            variabile->string = NULL;
+            variabile->paziente.cf = NULL;
+            variabile->paziente.dataTamp = NULL;
+            variabile->paziente.esitoTamp = NULL;
+            variabile->paziente.regione = NULL;
+            variabile->paziente.isRicoverato = 0;
+            variabile->registro = NULL;
 
             return variabile;
         }
@@ -131,35 +140,323 @@ struct ast *newasgn(struct var *vr, struct ast *v) {
 
 }
 
-double eval(struct ast *a) {
+struct ast *newCmp(int cmptype, struct ast *l, struct ast *r) {
+    
+    struct ast *a = malloc(sizeof(struct ast));
+    
+    if(!a) {
+        yyerror("out of space");
+        exit(0);
+    }
 
-    double v;
+    a->nodetype = '0' + cmptype;
+    a->l = l;
+    a->r = r;
+
+    return a;
+}
+
+struct ast *newCond(int nodetype, struct ast *cond, struct ast *then, struct ast *els) {
+
+    struct cond *a = malloc(sizeof(struct cond));
+
+    if(!a) {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    a->nodetype = nodetype;
+    a->cond = cond;
+    a->then = then;
+    a->els = els;
+
+    return a;
+}
+
+struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struct ast *esitoTamp, struct ast *regione, struct ast *isRicoverato) {
+    
+    struct paziente *a = malloc(sizeof(struct paziente));
+
+    if(!a) {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    /* paziente1 = paziente("c","a","b","d",0) */
+    a->nodetype = nodetype;
+    a->cf = cf;
+
+    a->dataTamp = dataTamp;
+    a->esitoTamp = esitoTamp;
+    a->regione = regione;
+    a->isRicoverato = isRicoverato;
+
+    return a;
+
+}
+
+
+void processTree(int print,struct ast *a) {
+
+    struct result risultato = eval(a);
+
+    if(print == 'P') {
+        if(risultato.risS != NULL) {
+            printf("= %s\n", risultato.risS);
+        } else {
+            if(risultato.risP.cf != NULL) {
+                printf("\nDATI PAZIENTE %s \n -Data tampone: %s \n -Esito tampone %s\n -Regione %s\n" 
+                        "-Ricoverato (1->si) %d\n", risultato.risP.cf,risultato.risP.dataTamp,
+                        risultato.risP.esitoTamp, risultato.risP.regione, risultato.risP.isRicoverato);
+
+            } else {
+               printf("= %4.4g\n", risultato.risD);
+            }
+
+        }
+    }
+}
+
+struct result eval(struct ast *a) {
+
+    struct result risultato;
+    risultato.risD = 0;
+    risultato.risS = NULL;
+    risultato.risP.cf = NULL;
+
+    struct result risAsgn;
 
     switch(a->nodetype) {
         /* Numeri (double) */
-        case 'D': v = ((struct numval*)a)->number; break; 
+        case 'D': risultato.risD = ((struct numval*)a)->number; break; 
 
         /* Stringa */
-        case 'S': 
+        case 'S': risultato.risS = ((struct stringVal *)a)->string; break;
 
+        /* Paziente */
+        case 'P': 
+            risultato.risP.cf = ((struct stringVal *)(((struct paziente *)a)->cf))->string;
+            risultato.risP.dataTamp = ((struct stringVal *)(((struct paziente *)a)->dataTamp))->string;
+            risultato.risP.esitoTamp = ((struct stringVal *)(((struct paziente *)a)->esitoTamp))->string;
+            risultato.risP.regione = ((struct stringVal *)(((struct paziente *)a)->regione))->string;
+            risultato.risP.isRicoverato = ((struct numval *)(((struct paziente *)a)->isRicoverato))->number;
+            break;
+        
         /* Assegnamento */
-        case '=': ((struct asgn *)a)->var->valore = eval(((struct asgn *)a)->v); break;
+        case '=': {
+           struct result risAsgn = evalAsgn(a);
+            
+            if(risAsgn.risS != NULL && risAsgn.risP.cf != NULL) {
+                    risultato.risD = risAsgn.risD;
+                    break;
+            }
+            if(risAsgn.risS != NULL && risAsgn.risD == 0) {
+                    risultato.risP = risAsgn.risP;
+                    break;
+            }
+            if(risAsgn.risP.cf != NULL && risAsgn.risD == 0) {
+                    risultato.risS = risAsgn.risS;
+                    break;
+            }
+        }
 
         /* Reference */
-        case 'R': v = ((struct ref *)a)->var->valore; break;
+        case 'R':
+            if(((struct ref *)a)->var->varType == 'S') {
+                risultato.risS = ((struct ref *)a)->var->string;
+                break;
+            } else {
+                if(((struct ref *)a)->var->varType == 'P') {
+                    risultato.risP = ((struct ref *)a)->var->paziente;
+                    break;
+                } 
+            }     
+            risultato.risD = ((struct ref *)a)->var->valore; 
+            break;
+        
+        /* IF */
+        case 'I':
+            if(eval(((struct cond *)a)->cond).risD != 0) {
+                risultato = eval(((struct cond *)a)->then);
+                break;
+            } else {
+                if(((struct cond *)a)->els == NULL) {
+                    break;
+                } else {
+                    risultato = eval(((struct cond *)a)->els);
+                    break;
+                }
+            }
+        
+        /* WHILE */
+        case 'W':
+            while(eval(((struct cond *)a)->cond).risD != 0) {
+                risultato = eval(((struct cond *)a)->then);
+            }
+            break;
 
-        /* Operazioni classiche */
-        case '+': v = eval(a->l) + eval(a->r); break;
-        case '-': v = eval(a->l) - eval(a->r); break;
-        case '*': v = eval(a->l) * eval(a->r); break;
-        case '/': v = eval(a->l) / eval(a->r); break;
-        case '|': v = eval(a->l); if(v < 0) v = -v; break;
-        case 'M': v = -eval(a->l); break;
 
-        /* Lista di istruzioni */
-        case 'L': eval(a->l); v = eval(a->r); break;
+        /* Operazioni aritmetiche */
+        case '+': 
+        case '-': 
+        case '*': 
+        case '/': 
+        case '|': 
+        case 'M':
+            risultato.risD = evalExpr(a);
+            break;
 
-        default: printf("Errore interno di valutazione");
+        /* Operazioni di comparazione */
+        case '1':
+        case '2':
+        case '3':
+        case '5':
+        case '6':
+            risultato.risD = evalExpr(a);
+            break;
+        /* Confronto tra due stringhe */
+        case '4':
+            if((eval(a->l).risS) != NULL) {
+                if(!strcmp(eval(a->l).risS,eval(a->r).risS)) {
+                    risultato.risD = 1;
+                    break;
+                } else {
+                    risultato.risD = 0;
+                    break;
+                }               
+            }
+            risultato.risD = evalExpr(a);
+            break;
+        
+        
+        case 'L': eval(a->l); eval(a->r);
+            break;
+
+        default: printf("Errore interno di valutazione - nodetype: %d", a->nodetype);
+    }
+
+    return risultato;
+}
+
+struct result evalAsgn(struct ast *a) {
+
+    struct result risultato;
+    risultato.risD = 0;
+    risultato.risS = NULL;
+    risultato.risP.cf = NULL;
+
+    switch(((struct asgn *)a)->v->nodetype) { 
+        case 'S':
+            ((struct asgn *)a)->var->varType = 'S';
+            risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
+            break;
+        
+        case 'D':
+            ((struct asgn *)a)->var->varType = 'D'; 
+            risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD; 
+            break;
+        
+        case 'P':
+            ((struct asgn *)a)->var->varType = 'P';
+            risultato.risP =  ((struct asgn *)a)->var->paziente = eval(a->r).risP;
+            break;
+        
+        default:
+            yyerror("Assegnamento non riuscito");
+            break;
+    }
+
+    return risultato;
+}
+
+
+
+
+double evalExpr(struct ast *a) {            //Funzione che valuta espressioni numeriche
+
+    double v;
+    
+    switch (a->nodetype)
+    {
+        /* Numeri (double) */
+        case 'D': 
+            v = ((struct numval*)a)->number; 
+            break; 
+
+
+        case '+': 
+            v = eval(a->l).risD + eval(a->r).risD; 
+            break;
+        case '-': 
+            v = eval(a->l).risD - eval(a->r).risD; 
+            break;
+        case '*': 
+            v = eval(a->l).risD * eval(a->r).risD; 
+            break;
+        case '/': 
+            v = eval(a->l).risD / eval(a->r).risD; 
+            break;
+        case '|': 
+            v = eval(a->l).risD; 
+            if(v < 0) v = -v; 
+            break;
+        case 'M': 
+            v = -eval(a->l).risD; 
+            break;
+
+        
+        case '1':
+            if(eval(a->l).risD > eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
+        case '2':
+            if(eval(a->l).risD < eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
+        case '3':
+            if(eval(a->l).risD != eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
+        case '4':
+            if(eval(a->l).risD == eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
+        case '5':
+            if(eval(a->l).risD >= eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
+        case '6':
+            if(eval(a->l).risD <= eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
+
+    
+    default:
+        break;
     }
 
     return v;

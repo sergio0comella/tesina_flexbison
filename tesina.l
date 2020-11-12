@@ -8,6 +8,19 @@ EXP ([Ee][-+]?[0-9]+)
 
 %%
 
+"IF"    { return IF; }
+"ELSE"  { return ELSE; }   
+"WHILE" { return WHILE; }  /* Strutture condizionali e cicli */
+
+"paziente" { return PAZIENTE; }  /* Tipi composti */
+
+">"     { yylval.cmp = 1; return CMP; }
+"<"     { yylval.cmp = 2; return CMP; }
+"!="    { yylval.cmp = 3; return CMP; }
+"=="    { yylval.cmp = 4; return CMP; }
+">="    { yylval.cmp = 5; return CMP; }
+"<="    { yylval.cmp = 6; return CMP; }  /* Operatori di comparazione */
+
 "+" |
 "-" |
 "/" |
@@ -16,7 +29,9 @@ EXP ([Ee][-+]?[0-9]+)
 "|" |
 "=" |
 ";" |
-")" { return yytext[0]; }
+":" |
+"," |
+")" { return yytext[0]; }  /* Operatori aritmetici */
 
 "\""[a-zA-Z0-9\-]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                         strcpy(yylval.string,yytext); return STRING; }  /* String */

@@ -55,9 +55,17 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     NUMBER = 258,                  /* NUMBER  */
-    EOL = 259,                     /* EOL  */
-    USRVAR = 260,                  /* USRVAR  */
-    UMINUS = 261                   /* UMINUS  */
+    STRING = 259,                  /* STRING  */
+    DATE = 260,                    /* DATE  */
+    IF = 261,                      /* IF  */
+    THEN = 262,                    /* THEN  */
+    ELSE = 263,                    /* ELSE  */
+    WHILE = 264,                   /* WHILE  */
+    PAZIENTE = 265,                /* PAZIENTE  */
+    USRVAR = 266,                  /* USRVAR  */
+    EOL = 267,                     /* EOL  */
+    CMP = 268,                     /* CMP  */
+    UMINUS = 269                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -70,9 +78,11 @@ union YYSTYPE
 
     struct ast *a;
     double d;
+    char *string;
     struct var *vr;
+    int cmp;
 
-#line 76 "tesina.tab.h"
+#line 86 "tesina.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
