@@ -325,19 +325,15 @@ struct result eval(struct ast *a) {
         /* Confronto tra due stringhe */
         case '4':
             if((eval(a->l).risS) != NULL) {
-                if(!strcmp(eval(a->l).risS,eval(a->r).risS)) {
-                    risultato.risD = 1;
-                    break;
-                } else {
-                    risultato.risD = 0;
-                    break;
-                }               
+                risultato.risD =(int) (strcmp(eval(a->l).risS, eval(a->r).risS) == 0);
+                break;
             }
             risultato.risD = evalExpr(a);
             break;
         
         
-        case 'L': eval(a->l); eval(a->r);
+        case 'L': 
+            eval(a->l); eval(a->r);
             break;
 
         default: printf("Errore interno di valutazione - nodetype: %d", a->nodetype);
