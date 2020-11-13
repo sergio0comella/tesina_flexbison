@@ -199,16 +199,24 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struc
 void processTree(int print,struct ast *a) {
 
     struct result risultato = eval(a);
+    char *si = "Sì";
+    char *no = "No";
 
     if(print == 'P') {
         if(risultato.risS != NULL) {
             printf("= %s\n", risultato.risS);
         } else {
             if(risultato.risP.cf != NULL) {
-                printf("\nDATI PAZIENTE %s \n -Data tampone: %s \n -Esito tampone %s\n -Regione %s\n" 
-                        "-Ricoverato (1->si) %d\n", risultato.risP.cf,risultato.risP.dataTamp,
-                        risultato.risP.esitoTamp, risultato.risP.regione, risultato.risP.isRicoverato);
-
+                printf("----------");
+                printf("| DATI PAZIENTE |");
+                printf("----------\n");
+                printf("|Cod. Fiscale: %s\n", risultato.risP.cf);
+                printf("|Data Tamp: %s\n", risultato.risP.dataTamp);
+                printf("|Esito Tamp: %s\n", risultato.risP.esitoTamp);
+                printf("|Regione: %s\n", risultato.risP.regione);
+                printf("|Ricoverato: %s\n", risultato.risP.isRicoverato == 1 ? si : no);
+                printf("-------------------------");
+                printf("------------\n");
             } else {
                printf("= %4.4g\n", risultato.risD);
             }
@@ -317,19 +325,15 @@ struct result eval(struct ast *a) {
         /* Confronto tra due stringhe */
         case '4':
             if((eval(a->l).risS) != NULL) {
-                if(!strcmp(eval(a->l).risS,eval(a->r).risS)) {
-                    risultato.risD = 1;
-                    break;
-                } else {
-                    risultato.risD = 0;
-                    break;
-                }               
+                risultato.risD =(int) (strcmp(eval(a->l).risS, eval(a->r).risS) == 0);
+                break;
             }
             risultato.risD = evalExpr(a);
             break;
         
         
-        case 'L': eval(a->l); eval(a->r);
+        case 'L': 
+            eval(a->l); eval(a->r);
             break;
 
         default: printf("Errore interno di valutazione - nodetype: %d", a->nodetype);
@@ -404,59 +408,26 @@ double evalExpr(struct ast *a) {            //Funzione che valuta espressioni nu
             v = -eval(a->l).risD; 
             break;
 
-        
         case '1':
-            if(eval(a->l).risD > eval(a->r).risD) {
-                v = 1;
-                break;
-            } else {
-                v = 0;
-                break;
-            }
+            v = (int)(eval(a->l).risD > eval(a->r).risD);
+            break;
         case '2':
-            if(eval(a->l).risD < eval(a->r).risD) {
-                v = 1;
-                break;
-            } else {
-                v = 0;
-                break;
-            }
+            v = (int)(eval(a->l).risD < eval(a->r).risD);
+            break;
         case '3':
-            if(eval(a->l).risD != eval(a->r).risD) {
-                v = 1;
-                break;
-            } else {
-                v = 0;
-                break;
-            }
+            v = (int)(eval(a->l).risD != eval(a->r).risD);
+            break;
         case '4':
-            if(eval(a->l).risD == eval(a->r).risD) {
-                v = 1;
-                break;
-            } else {
-                v = 0;
-                break;
-            }
+            v = (int)(eval(a->l).risD == eval(a->r).risD);
+            break;
         case '5':
-            if(eval(a->l).risD >= eval(a->r).risD) {
-                v = 1;
-                break;
-            } else {
-                v = 0;
-                break;
-            }
+            v = (int)(eval(a->l).risD >= eval(a->r).risD);
+            break;
         case '6':
-            if(eval(a->l).risD <= eval(a->r).risD) {
-                v = 1;
-                break;
-            } else {
-                v = 0;
-                break;
-            }
-
-    
-    default:
-        break;
+            v = (int)(eval(a->l).risD <= eval(a->r).risD);
+            break;
+        default:
+            break;
     }
 
     return v;
@@ -486,11 +457,6 @@ void treefree(struct ast *a) {
 }
 
 
-
-
-
-
-
 void yyerror(char *s,...) {
     va_list ap; 
     va_start(ap, s);
@@ -501,7 +467,7 @@ void yyerror(char *s,...) {
 
 int main(int argc, char const *argv[])
 {
-    printf("");
+    printf("\n");
     return yyparse();
 
 }
