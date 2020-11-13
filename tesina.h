@@ -112,3 +112,4 @@ struct result eval(struct ast *a);
 double evalExpr(struct ast *a);
 struct result evalAsgn(struct ast *a);
 
+/* inserire struttura get */

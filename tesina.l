@@ -12,7 +12,12 @@ EXP ([Ee][-+]?[0-9]+)
 "ELSE"  { return ELSE; }   
 "WHILE" { return WHILE; }  /* Strutture condizionali e cicli */
 
-"paziente" { return PAZIENTE; }  /* Tipi composti */
+"PAZIENTE"        { return PAZIENTE; }  
+"getCF"           { return CF; }
+"getDataTamp"     { return DATATAMP; }
+"getEsitoTamp"    { return ESITOTAMP; }
+"getRegione"      { return REGIONE; }
+"getIsRicoverato" { return ISRIC; }     /* Paziente e rispettivi "metodi" */
 
 ">"     { yylval.cmp = 1; return CMP; }
 "<"     { yylval.cmp = 2; return CMP; }
