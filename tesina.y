@@ -45,9 +45,9 @@ prog:
     | prog EOL               { printf(""); }   
 ;
 
-condExp: IF exp ':' seqOp             { $$ = newCond('I',$2,$4,NULL); }
-    | IF exp ':' seqOp ELSE seqOp     { $$ = newCond('I',$2,$4,$6); }
-    | WHILE exp ':' seqOp             { $$ = newCond('W',$2,$4,NULL); }
+condExp: IF stmt ':' seqOp             { $$ = newCond('I',$2,$4,NULL); }
+    | IF stmt ':' seqOp ELSE seqOp     { $$ = newCond('I',$2,$4,$6); }
+    | WHILE stmt ':' seqOp             { $$ = newCond('W',$2,$4,NULL); }
 ;
 
 seqOp: stmt
@@ -55,6 +55,7 @@ seqOp: stmt
 ;
 
 stmt: exp
+    | stmt CMP stmt                                               { $$ = newCmp($2, $1, $3); }
     | USRVAR '=' stmt                                             { $$ = newasgn($1, $3); }
     | PAZIENTE'(' exp ',' exp ',' exp ',' exp ',' exp ')'         { $$ = newPaziente('P',$3,$5,$7,$9,$11); }
     | USRVAR '.' CF                                               { $$ = newGet($1,1); }
@@ -72,7 +73,6 @@ exp: NUMBER                     { $$ = newnum($1); }
     | '|' exp                   { $$ = newast('|', $2, NULL); }
     | '(' exp ')'               { $$ = $2; }
     | '-' exp %prec UMINUS      { $$ = newast('M', $2, NULL); }
-    | exp CMP exp               { $$ = newCmp($2, $1, $3); }
     | STRING                    { $$ = newString($1); }
     | DATE                      { $$ = newString($1); }
     | USRVAR                    { $$ = newref($1); }

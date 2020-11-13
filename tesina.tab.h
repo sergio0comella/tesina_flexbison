@@ -39,7 +39,7 @@
 # define YY_YY_TESINA_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -62,10 +62,15 @@ extern int yydebug;
     ELSE = 263,                    /* ELSE  */
     WHILE = 264,                   /* WHILE  */
     PAZIENTE = 265,                /* PAZIENTE  */
-    USRVAR = 266,                  /* USRVAR  */
-    EOL = 267,                     /* EOL  */
-    CMP = 268,                     /* CMP  */
-    UMINUS = 269                   /* UMINUS  */
+    CF = 266,                      /* CF  */
+    ESITOTAMP = 267,               /* ESITOTAMP  */
+    DATATAMP = 268,                /* DATATAMP  */
+    REGIONE = 269,                 /* REGIONE  */
+    ISRIC = 270,                   /* ISRIC  */
+    USRVAR = 271,                  /* USRVAR  */
+    EOL = 272,                     /* EOL  */
+    CMP = 273,                     /* CMP  */
+    UMINUS = 274                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -82,7 +87,7 @@ union YYSTYPE
     struct var *vr;
     int cmp;
 
-#line 86 "tesina.tab.h"
+#line 91 "tesina.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

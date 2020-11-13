@@ -123,7 +123,7 @@ struct ast *newref(struct var* vr) {
 
 }
 
-struct ast *newGet(struct var *vr,int a) {
+struct ast *newGet(struct var *vr,int c) {
 
     struct get *a = malloc(sizeof(struct get));
 
@@ -133,14 +133,30 @@ struct ast *newGet(struct var *vr,int a) {
     }
 
     a->nodetype = 'G';
+    a->getVal = NULL;
+    char *si = "\"Si\"";
+    char *no = "\"No\"";
 
-    /* finire switch case */
-    switch(a){
-        case '1':
+    switch(c){
+        case 1:
             a->getVal = vr->paziente.cf;
             break;
+        case 2:
+            a->getVal = vr->paziente.esitoTamp;
+            break;
+        case 3:
+            a->getVal = vr->paziente.dataTamp;
+            break;
+        case 4:
+            a->getVal = vr->paziente.regione;
+            break;
+        case 5:
+            a->getVal = vr->paziente.isRicoverato ? si : no;
+            break;
+        default:
+            a->getVal = "Not found";
+            break;
     }
-
 
     return (struct ast *)a;
 
@@ -262,6 +278,11 @@ struct result eval(struct ast *a) {
             risultato.risP.esitoTamp = eval(((struct paziente *)a)->esitoTamp).risS;
             risultato.risP.regione = eval(((struct paziente *)a)->regione).risS;
             risultato.risP.isRicoverato = ((struct numval *)(((struct paziente *)a)->isRicoverato))->number;
+            break;
+
+        /* Get valori Paziente */
+        case 'G':
+            risultato.risS = ((struct get *)a)->getVal;
             break;
         
         /* Assegnamento */

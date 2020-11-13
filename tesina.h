@@ -73,6 +73,12 @@ struct cond {
     struct ast *els;
 };
 
+/* Struttura per ottenere i dati del paziente chiesti dalla get */
+struct get {
+    int nodetype;
+    char *getVal;
+};
+
 /* Struttura per il tipo paziente */
 struct paziente {
     int nodetype;
@@ -99,7 +105,7 @@ struct ast *newasgn(struct var *vr, struct ast *v);                             
 struct ast *newref(struct var* vr);                                                                     // R 
 struct ast *newCmp(int cmptype, struct ast *l, struct ast *r);                                          // 1-6 
 struct ast *newCond(int nodetype, struct ast *, struct ast *, struct ast*);                             // I o W
-
+struct ast *newGet(struct var *vr,int a);                                                               // G
 //P
 struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struct ast *esitoTamp, struct ast *regione, struct ast *isRicoverato);
 
@@ -112,4 +118,3 @@ struct result eval(struct ast *a);
 double evalExpr(struct ast *a);
 struct result evalAsgn(struct ast *a);
 
-/* inserire struttura get */

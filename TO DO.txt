@@ -6,3 +6,6 @@ TO DO:
 -Sistemare funzione di stampa 
 
 -Capire casting tra struct
+
+
+paziente3 = PAZIENTE("DGVMRC97P11G273M","11Set1997","Positivo","Sicilia",1)

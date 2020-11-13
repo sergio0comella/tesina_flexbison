@@ -17,7 +17,7 @@ EXP ([Ee][-+]?[0-9]+)
 "getDataTamp"     { return DATATAMP; }
 "getEsitoTamp"    { return ESITOTAMP; }
 "getRegione"      { return REGIONE; }
-"getIsRicoverato" { return ISRIC; }     /* Paziente e rispettivi "metodi" */
+"isRicoverato"    { return ISRIC; }     /* Paziente e rispettivi "metodi" */
 
 ">"     { yylval.cmp = 1; return CMP; }
 "<"     { yylval.cmp = 2; return CMP; }
@@ -36,9 +36,10 @@ EXP ([Ee][-+]?[0-9]+)
 ";" |
 ":" |
 "," |
+"." |
 ")" { return yytext[0]; }  /* Operatori aritmetici */
 
-"\""[a-zA-Z0-9\-]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
+"\""[a-zA-Z0-9" "\-]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                         strcpy(yylval.string,yytext); return STRING; }  /* String */
 
 ([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4} {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
