@@ -123,6 +123,45 @@ struct ast *newref(struct var* vr) {
 
 }
 
+struct ast *newGet(struct var *vr,int c) {
+
+    struct get *a = malloc(sizeof(struct get));
+
+    if(!a) {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    a->nodetype = 'G';
+    a->getVal = NULL;
+    char *si = "\"Si\"";
+    char *no = "\"No\"";
+
+    switch(c){
+        case 1:
+            a->getVal = vr->paziente.cf;
+            break;
+        case 2:
+            a->getVal = vr->paziente.esitoTamp;
+            break;
+        case 3:
+            a->getVal = vr->paziente.dataTamp;
+            break;
+        case 4:
+            a->getVal = vr->paziente.regione;
+            break;
+        case 5:
+            a->getVal = vr->paziente.isRicoverato ? si : no;
+            break;
+        default:
+            a->getVal = "Not found";
+            break;
+    }
+
+    return (struct ast *)a;
+
+}
+
 struct ast *newasgn(struct var *vr, struct ast *v) {
     
     struct asgn *a = malloc(sizeof(struct asgn));
@@ -182,10 +221,10 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struc
         exit(0);
     }
 
-    /* paziente1 = paziente("c","a","b","d",0) */
+    /* paziente3 = PAZIENTE("DGVMRC97P11G273M","11Set1997","Positivo","Sicilia",1) */
+    /* paziente3 = PAZIENTE(CF,"11Marzo1997","Positivo","Lombardia",1) */
     a->nodetype = nodetype;
     a->cf = cf;
-
     a->dataTamp = dataTamp;
     a->esitoTamp = esitoTamp;
     a->regione = regione;
@@ -195,44 +234,35 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struc
 
 }
 
-
+/* Funzione che stampa i risultati delle valutazioni */
 void processTree(int print,struct ast *a) {
 
     struct result risultato = eval(a);
-    char *si = "Sì";
-    char *no = "No";
 
     if(print == 'P') {
         if(risultato.risS != NULL) {
-            printf("= %s\n", risultato.risS);
+            printf(" = %s\n\n", risultato.risS);
         } else {
             if(risultato.risP.cf != NULL) {
-                printf("----------");
-                printf("| DATI PAZIENTE |");
-                printf("----------\n");
-                printf("|Cod. Fiscale: %s\n", risultato.risP.cf);
-                printf("|Data Tamp: %s\n", risultato.risP.dataTamp);
-                printf("|Esito Tamp: %s\n", risultato.risP.esitoTamp);
-                printf("|Regione: %s\n", risultato.risP.regione);
-                printf("|Ricoverato: %s\n", risultato.risP.isRicoverato == 1 ? si : no);
-                printf("-------------------------");
-                printf("------------\n");
+                printf("\nDATI PAZIENTE: \n->CF:  \t%s \n->Data tampone:   %s \n->Esito tampone:   %s\n->Regione:   %s\n" 
+                        "->Ricoverato (1->si): \t%d\n\n", risultato.risP.cf,risultato.risP.dataTamp,
+                        risultato.risP.esitoTamp, risultato.risP.regione, risultato.risP.isRicoverato);
+
             } else {
-               printf("= %4.4g\n", risultato.risD);
+               printf(" = %4.4g\n\n", risultato.risD);
             }
 
         }
     }
 }
 
+/* Funzione di valutazione dell'albero generale */
 struct result eval(struct ast *a) {
 
     struct result risultato;
     risultato.risD = 0;
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
-
-    struct result risAsgn;
 
     switch(a->nodetype) {
         /* Numeri (double) */
@@ -243,29 +273,35 @@ struct result eval(struct ast *a) {
 
         /* Paziente */
         case 'P': 
-            risultato.risP.cf = ((struct stringVal *)(((struct paziente *)a)->cf))->string;
-            risultato.risP.dataTamp = ((struct stringVal *)(((struct paziente *)a)->dataTamp))->string;
-            risultato.risP.esitoTamp = ((struct stringVal *)(((struct paziente *)a)->esitoTamp))->string;
-            risultato.risP.regione = ((struct stringVal *)(((struct paziente *)a)->regione))->string;
+            risultato.risP.cf = eval(((struct paziente *)a)->cf).risS;
+            risultato.risP.dataTamp = eval(((struct paziente *)a)->dataTamp).risS;
+            risultato.risP.esitoTamp = eval(((struct paziente *)a)->esitoTamp).risS;
+            risultato.risP.regione = eval(((struct paziente *)a)->regione).risS;
             risultato.risP.isRicoverato = ((struct numval *)(((struct paziente *)a)->isRicoverato))->number;
+            break;
+
+        /* Get valori Paziente */
+        case 'G':
+            risultato.risS = ((struct get *)a)->getVal;
             break;
         
         /* Assegnamento */
         case '=': {
            struct result risAsgn = evalAsgn(a);
             
-            if(risAsgn.risS != NULL && risAsgn.risP.cf != NULL) {
+            if(risAsgn.risS == NULL && risAsgn.risP.cf == NULL) {
                     risultato.risD = risAsgn.risD;
                     break;
             }
-            if(risAsgn.risS != NULL && risAsgn.risD == 0) {
+            if(risAsgn.risS == NULL && risAsgn.risD == 0) {
                     risultato.risP = risAsgn.risP;
                     break;
             }
-            if(risAsgn.risP.cf != NULL && risAsgn.risD == 0) {
+            if(risAsgn.risP.cf == NULL && risAsgn.risD == 0) {
                     risultato.risS = risAsgn.risS;
                     break;
             }
+            break;
         }
 
         /* Reference */
@@ -325,15 +361,19 @@ struct result eval(struct ast *a) {
         /* Confronto tra due stringhe */
         case '4':
             if((eval(a->l).risS) != NULL) {
-                risultato.risD =(int) (strcmp(eval(a->l).risS, eval(a->r).risS) == 0);
-                break;
+                if(!strcmp(eval(a->l).risS,eval(a->r).risS)) {
+                    risultato.risD = 1;
+                    break;
+                } else {
+                    risultato.risD = 0;
+                    break;
+                }               
             }
             risultato.risD = evalExpr(a);
             break;
         
         
-        case 'L': 
-            eval(a->l); eval(a->r);
+        case 'L': eval(a->l); eval(a->r);
             break;
 
         default: printf("Errore interno di valutazione - nodetype: %d", a->nodetype);
@@ -342,6 +382,7 @@ struct result eval(struct ast *a) {
     return risultato;
 }
 
+/* Funzione che valuta l'assegnamento di valori a variabili */
 struct result evalAsgn(struct ast *a) {
 
     struct result risultato;
@@ -349,34 +390,31 @@ struct result evalAsgn(struct ast *a) {
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
 
-    switch(((struct asgn *)a)->v->nodetype) { 
-        case 'S':
-            ((struct asgn *)a)->var->varType = 'S';
-            risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
-            break;
-        
-        case 'D':
-            ((struct asgn *)a)->var->varType = 'D'; 
-            risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD; 
-            break;
-        
-        case 'P':
-            ((struct asgn *)a)->var->varType = 'P';
-            risultato.risP =  ((struct asgn *)a)->var->paziente = eval(a->r).risP;
-            break;
-        
-        default:
-            yyerror("Assegnamento non riuscito");
-            break;
+    struct result risAnnidato;
+    risAnnidato.risD = 0;
+    risAnnidato.risS = NULL;
+    risAnnidato.risP.cf = NULL;
+
+    risAnnidato = eval(((struct asgn *)a)->v);
+
+    if(risAnnidato.risS == NULL && risAnnidato.risP.cf == NULL) {
+        ((struct asgn *)a)->var->varType = 'D'; 
+        risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD; 
+    }
+    if(risAnnidato.risS == NULL && risAnnidato.risD == 0) {
+        ((struct asgn *)a)->var->varType = 'P';
+        risultato.risP =  ((struct asgn *)a)->var->paziente = eval(a->r).risP;
+    }
+    if(risAnnidato.risP.cf == NULL && risAnnidato.risD == 0) {
+        ((struct asgn *)a)->var->varType = 'S';
+        risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
     }
 
     return risultato;
 }
 
-
-
-
-double evalExpr(struct ast *a) {            //Funzione che valuta espressioni numeriche
+/* Funzione che valuta espressioni numeriche */
+double evalExpr(struct ast *a) {            
 
     double v;
     
@@ -408,26 +446,59 @@ double evalExpr(struct ast *a) {            //Funzione che valuta espressioni nu
             v = -eval(a->l).risD; 
             break;
 
+        
         case '1':
-            v = (int)(eval(a->l).risD > eval(a->r).risD);
-            break;
+            if(eval(a->l).risD > eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
         case '2':
-            v = (int)(eval(a->l).risD < eval(a->r).risD);
-            break;
+            if(eval(a->l).risD < eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
         case '3':
-            v = (int)(eval(a->l).risD != eval(a->r).risD);
-            break;
+            if(eval(a->l).risD != eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
         case '4':
-            v = (int)(eval(a->l).risD == eval(a->r).risD);
-            break;
+            if(eval(a->l).risD == eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
         case '5':
-            v = (int)(eval(a->l).risD >= eval(a->r).risD);
-            break;
+            if(eval(a->l).risD >= eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
         case '6':
-            v = (int)(eval(a->l).risD <= eval(a->r).risD);
-            break;
-        default:
-            break;
+            if(eval(a->l).risD <= eval(a->r).risD) {
+                v = 1;
+                break;
+            } else {
+                v = 0;
+                break;
+            }
+
+    
+    default:
+        break;
     }
 
     return v;
@@ -457,6 +528,11 @@ void treefree(struct ast *a) {
 }
 
 
+
+
+
+
+
 void yyerror(char *s,...) {
     va_list ap; 
     va_start(ap, s);
@@ -467,7 +543,7 @@ void yyerror(char *s,...) {
 
 int main(int argc, char const *argv[])
 {
-    printf("\n");
+    printf("");
     return yyparse();
 
 }

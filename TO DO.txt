@@ -1,0 +1,11 @@
+TO DO:
+
+- Prevedere comando di clear, per cancellare tutto o alcune parti
+- Cercare di risolvere il problema che se c'è un errore sintattico salta tutto quello fatto prima
+
+-Sistemare funzione di stampa 
+
+-Capire casting tra struct
+
+
+paziente3 = PAZIENTE("DGVMRC97P11G273M","11Set1997","Positivo","Sicilia",1)
