@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tesina.h"
+#define YYERROR_VERBOSE 1
+  //per eliminare i warning
+    int yylex(void);
 %}
 
 /* Dichiarazione union per i tipi */
@@ -37,12 +40,17 @@
 
 %start prog
 %%
-
+/*------------------------------------------------------------------------------
+ * 
+ * rules
+ * 
+ *----------------------------------------------------------------------------*/
 prog:
-    | prog stmt EOL          {processTree('P',$2); /*treefree($2);*/ printf(""); }
+    | prog stmt EOL          {('P',$2); /*treefree($2);*/ printf(""); }
     | prog stmt ';' EOL      {processTree('N',$2); /*treefree($2);*/ printf(""); }
     | prog condExp EOL       {processTree('N',$2); /*treefree($2);*/ printf(""); }
-    | prog EOL               { printf(""); }   
+    | error                  {yyerrok;}     
+    | prog EOL               { printf(""); } 
 ;
 
 condExp: IF stmt ':' seqOp             { $$ = newCond('I',$2,$4,NULL); }
@@ -79,4 +87,3 @@ exp: NUMBER                     { $$ = newnum($1); }
 ;
 
 %%
-
