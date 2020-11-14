@@ -137,17 +137,22 @@ void yyerror(char *s, ...)
     fprintf(stderr, "%d: error: ", yylineno);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
-   //printNotValidCommand();
+    //printNotValidCommand();
 }
 
 void printNotValidCommand(){
     printf("\033[0;31m");
-    printf("Ultimo comando inserito non riconosciuto. Riprova;\n");
+    printf("Ultimo comando inserito non riconosciuto. Riprova.\n");
     printf("\033[0m");
 }
 
 int main(int argc, char const *argv[])
 {
     printf("");
-    return yyparse();
+    if(!yyparse()){
+        yylex_destroy();
+        return yyparse();
+    }else{
+        return yyparse();
+    }
 }

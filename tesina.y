@@ -50,7 +50,7 @@ prog:
     | prog stmt ';' EOL      {processTree('N',$2); /*treefree($2);*/ printf(""); }
     | prog condExp EOL       {processTree('N',$2); /*treefree($2);*/ printf(""); }
     | prog EOL               { printf(""); }
-    | prog error '\n'        { yyerrok; }
+    | prog error EOL         { yyerrok; yyclearin;}
     ;
 ;
 
