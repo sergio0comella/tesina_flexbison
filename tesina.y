@@ -46,11 +46,12 @@
  * 
  *----------------------------------------------------------------------------*/
 prog:
-    | prog stmt EOL          {('P',$2); /*treefree($2);*/ printf(""); }
+    | prog stmt EOL          {processTree('P',$2); /*treefree($2);*/ printf(""); }
     | prog stmt ';' EOL      {processTree('N',$2); /*treefree($2);*/ printf(""); }
     | prog condExp EOL       {processTree('N',$2); /*treefree($2);*/ printf(""); }
-    | error                  {yyerrok;}     
-    | prog EOL               { printf(""); } 
+    | prog EOL               { printf(""); }
+    | prog error '\n'        { yyerrok; }
+    ;
 ;
 
 condExp: IF stmt ':' seqOp             { $$ = newCond('I',$2,$4,NULL); }

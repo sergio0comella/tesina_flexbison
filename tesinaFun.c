@@ -132,12 +132,18 @@ void treefree(struct ast *a)
 
 void yyerror(char *s, ...)
 {
-//    va_list ap;
-//    va_start(ap, s);
-//    fprintf(stderr, "%d: error: ", yylineno);
-//    vfprintf(stderr, s, ap);
-//    fprintf(stderr, "\n");
-      printf("Comando non riconosciuto. Riprova\n");
+    va_list ap;
+    va_start(ap, s);
+    fprintf(stderr, "%d: error: ", yylineno);
+    vfprintf(stderr, s, ap);
+    fprintf(stderr, "\n");
+   //printNotValidCommand();
+}
+
+void printNotValidCommand(){
+    printf("\033[0;31m");
+    printf("Ultimo comando inserito non riconosciuto. Riprova;\n");
+    printf("\033[0m");
 }
 
 int main(int argc, char const *argv[])
