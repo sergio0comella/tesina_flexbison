@@ -23,6 +23,7 @@
 %token IF THEN ELSE WHILE 
 %token PAZIENTE 
 %token CF ESITOTAMP DATATAMP REGIONE ISRIC
+%token REGISTRO
 
 %token <vr> USRVAR
 
@@ -72,6 +73,7 @@ stmt: exp
     | USRVAR '.' DATATAMP                                         { $$ = newGet($1,3); }
     | USRVAR '.' REGIONE                                          { $$ = newGet($1,4); }
     | USRVAR '.' ISRIC                                            { $$ = newGet($1,5); }
+    | REGISTRO'('')'                                              { $$ = newRegistro('O'); }
 ;
 
 exp: NUMBER                     { $$ = newnum($1); }

@@ -12,6 +12,8 @@ struct result eval(struct ast *a)
     risultato.risD = 0;
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
+    risultato.risO.idReg = 0;
+    
 
     switch (a->nodetype)
     {
@@ -38,27 +40,39 @@ struct result eval(struct ast *a)
     case 'G':
         risultato.risS = ((struct get *)a)->getVal;
         break;
+    
+    /* Inizializzazione registro */
+    case 'O':
+        risultato.risO.idReg = createUID();
+        break;
 
     /* Assegnamento */
     case '=':
     {
         struct result risAsgn = evalAsgn(a);
 
-        if (risAsgn.risS == NULL && risAsgn.risP.cf == NULL)
+        if (risAsgn.risD != 0)
         {
             risultato.risD = risAsgn.risD;
             break;
         }
-        if (risAsgn.risS == NULL && risAsgn.risD == 0)
+        if (risAsgn.risS == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0)
         {
             risultato.risP = risAsgn.risP;
             break;
         }
-        if (risAsgn.risP.cf == NULL && risAsgn.risD == 0)
+        if (risAsgn.risP.cf == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0)
         {
             risultato.risS = risAsgn.risS;
             break;
         }
+        if (risAsgn.risO.idReg != 0)
+        {
+            risultato.risO.idReg = risAsgn.risO.idReg;
+            break;
+        }
+
+
         break;
     }
 
@@ -156,28 +170,35 @@ struct result evalAsgn(struct ast *a)
     risultato.risD = 0;
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
+    risultato.risO.idReg = 0;
 
     struct result risAnnidato;
     risAnnidato.risD = 0;
     risAnnidato.risS = NULL;
     risAnnidato.risP.cf = NULL;
+    risAnnidato.risO.idReg = 0;
 
     risAnnidato = eval(((struct asgn *)a)->v);
 
-    if (risAnnidato.risS == NULL && risAnnidato.risP.cf == NULL)
+    if (risAnnidato.risD != 0) 
     {
         ((struct asgn *)a)->var->varType = 'D';
         risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD;
     }
-    if (risAnnidato.risS == NULL && risAnnidato.risD == 0)
+    if (risAnnidato.risS == NULL && risAnnidato.risD == 0 && risAnnidato.risO.idReg == 0) 
     {
         ((struct asgn *)a)->var->varType = 'P';
         risultato.risP = ((struct asgn *)a)->var->paziente = eval(a->r).risP;
     }
-    if (risAnnidato.risP.cf == NULL && risAnnidato.risD == 0)
+    if (risAnnidato.risP.cf == NULL && risAnnidato.risD == 0 && risAnnidato.risO.idReg == 0)
     {
         ((struct asgn *)a)->var->varType = 'S';
         risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
+    }
+
+    if (risAnnidato.risO.idReg != 0) {
+        ((struct asgn *)a)->var->varType = 'O';
+        risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = eval(a->r).risO.idReg;
     }
 
     return risultato;

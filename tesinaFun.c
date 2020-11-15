@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
 #include "tesina.h"
 
 /* Funzione di hash che data una stringa ne restiusce il corrispetivo intero */
@@ -49,7 +50,8 @@ struct var *lookup(char *nome)
             variabile->paziente.esitoTamp = NULL;
             variabile->paziente.regione = NULL;
             variabile->paziente.isRicoverato = 0;
-            variabile->registro = NULL;
+            variabile->registro.idReg = 0;
+            variabile->registro.indice = 0;
 
             return variabile;
         }
@@ -72,32 +74,35 @@ void processTree(int print, struct ast *a)
 
     if (print == 'P')
     {
-        if (sizeof(risultato.risS) > 0 && risultato.risS != NULL)
-        {
+        if (sizeof(risultato.risS) > 0 && risultato.risS != NULL) {
+            printf("\033[0;33m");
             printf(" = %s\n\n", risultato.risS);
-        }
-        else
-        {
-            if (risultato.risP.cf != NULL)
-            {
-                printf("\n----------");
-                printf("| DATI PAZIENTE |");
-                printf("----------\n");
-                printf("|Cod. Fiscale: %s\n", risultato.risP.cf);
-                printf("|Data Tamp: %s\n", risultato.risP.dataTamp);
-                printf("|Esito Tamp: %s\n", risultato.risP.esitoTamp);
-                printf("|Regione: %s\n", risultato.risP.regione);
-                printf("|Ricoverato: %s\n", risultato.risP.isRicoverato == 1 ? "Sì" : "No");
-                printf("-------------------------");
-                printf("------------\n");
-            }
-            else if(sizeof(risultato.risD) > 0)
-            {
-                printf(" = %4.4g\n\n", risultato.risD);
-            }
+            printf("\033[0m");
+        } else if (risultato.risP.cf != NULL) {
+            printf("\033[1;37m");
+            printf("\n----------");
+            printf("| DATI PAZIENTE |");
+            printf("----------\n");
+            printf("|Cod. Fiscale: %s\n", risultato.risP.cf);
+            printf("|Data Tamp: %s\n", risultato.risP.dataTamp);
+            printf("|Esito Tamp: %s\n", risultato.risP.esitoTamp);
+            printf("|Regione: %s\n", risultato.risP.regione);
+            printf("|Ricoverato: %s\n", risultato.risP.isRicoverato == 1 ? "Sì" : "No");
+            printf("-------------------------");
+            printf("------------\n");
+            printf("\033[0m");
+        } else if(risultato.risO.idReg != 0) {
+            printf("\033[0;32m");
+            printf("Registro creato correttamente.\n\n");
+            printf("\033[0m");
+        } else {
+            printf("\033[0;m");
+            printf(" = %4.4g\n\n", risultato.risD);
+            printf("\033[0m");
         }
     }
 }
+
 
 void treefree(struct ast *a)
 {
@@ -130,13 +135,24 @@ void treefree(struct ast *a)
     }
 }
 
+/* Funzione per generare l'ID del registro in maniera univoca e casuale */
+int createUID() {
+    
+    srand(time(0));
+
+    int uid = (int)(rand() + 1);
+    return uid;
+}
+
 void yyerror(char *s, ...)
 {
     va_list ap;
     va_start(ap, s);
+    fprintf(stderr, "\033[0;31m");
     fprintf(stderr, "%d: error: ", yylineno);
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
+    fprintf(stderr,"\033[0m");
     //printNotValidCommand();
 }
 

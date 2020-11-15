@@ -181,7 +181,7 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp, stru
     }
 
     /* paziente3 = PAZIENTE("DGVMRC97P11G273M","11Set1997","Positivo","Sicilia",1) */
-    /* paziente3 = PAZIENTE(CF,"11Marzo1997","Positivo","Lombardia",1) */
+    /* paziente4 = PAZIENTE(codice,"11Marzo1997","Positivo","Lombardia",1) */
     a->nodetype = nodetype;
     a->cf = cf;
     a->dataTamp = dataTamp;
@@ -190,6 +190,23 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp, stru
     a->isRicoverato = isRicoverato;
 
     return a;
+}
+
+struct ast *newRegistro(int nodetype) {
+
+    struct ast *a = malloc(sizeof(struct ast));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    a->nodetype = nodetype;
+
+    return a;
+
+    /*registro1 = REGISTRO() */
 }
 
 

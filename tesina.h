@@ -10,11 +10,21 @@ struct pazienteDet {
     int isRicoverato;   
 };
 
+/* Registro dei pazienti ovvero una lista */ 
+struct registro {
+    int nodetype;
+    int idReg;
+    int indice;
+    struct pazienteDet paziente;
+    struct registro *pazienteSucc;
+};
+
 /* Risultati delle valutizioni delle espressioni memorizzate nei rispettivi tipi */
 struct result {
     double risD;
     char *risS;
     struct pazienteDet risP;
+    struct registro risO;
 };
 
 
@@ -25,7 +35,7 @@ struct var {
     double valore;
     char *string;
     struct pazienteDet paziente;
-    struct registro *registro;
+    struct registro registro;
 };
 
 #define NHASH 9997
@@ -89,14 +99,6 @@ struct paziente {
     struct ast *isRicoverato;
 };
 
-/* Registro dei pazienti ovvero una lista 
-struct registro {
-    int nodetype;
-    int indice;
-    struct paziente *paziente;
-    struct registro *pazSucc;
-};*/
-
 /*costruzione AST*/
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);                                                                           // D
@@ -108,6 +110,9 @@ struct ast *newCond(int nodetype, struct ast *, struct ast *, struct ast*);     
 struct ast *newGet(struct var *vr,int a);                                                               // G
 //P
 struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struct ast *esitoTamp, struct ast *regione, struct ast *isRicoverato);
+//O
+struct ast *newRegistro(int nodetype);
+
 
 /*cancellazione nodi*/
 void treefree(struct ast *);

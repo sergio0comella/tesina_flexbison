@@ -19,6 +19,8 @@ EXP ([Ee][-+]?[0-9]+)
 "getRegione"      { return REGIONE; }
 "isRicoverato"    { return ISRIC; }     /* Paziente e rispettivi "metodi" */
 
+"REGISTRO" { return REGISTRO; } 
+
 ">"     { yylval.cmp = 1; return CMP; }
 "<"     { yylval.cmp = 2; return CMP; }
 "!="    { yylval.cmp = 3; return CMP; }
