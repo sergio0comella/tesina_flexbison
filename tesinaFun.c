@@ -91,7 +91,7 @@ void processTree(int print, struct ast *a)
             printf("-------------------------");
             printf("------------\n");
             printf("\033[0m");
-        } else if(risultato.risO.idReg != 0) {
+        } else if(risultato.risO.idReg != NULL) {
             printf("\033[0;32m");
             printf("Registro creato correttamente.\n\n");
             printf("\033[0m");

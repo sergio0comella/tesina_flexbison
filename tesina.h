@@ -99,6 +99,12 @@ struct paziente {
     struct ast *isRicoverato;
 };
 
+struct addPaziente {
+    int nodetype;
+    struct var *varReg;  
+    struct ast *paziente;
+};
+
 /*costruzione AST*/
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);                                                                           // D
@@ -112,6 +118,8 @@ struct ast *newGet(struct var *vr,int a);                                       
 struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struct ast *esitoTamp, struct ast *regione, struct ast *isRicoverato);
 //O
 struct ast *newRegistro(int nodetype);
+//E
+struct ast *addPaziente(int nodetype,struct var* varReg, struct ast* paziente);
 
 
 /*cancellazione nodi*/

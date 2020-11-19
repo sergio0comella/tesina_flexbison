@@ -14,7 +14,6 @@ struct result eval(struct ast *a)
     risultato.risP.cf = NULL;
     risultato.risO.idReg = 0;
     
-
     switch (a->nodetype)
     {
     /* Numeri (double) */
@@ -45,6 +44,39 @@ struct result eval(struct ast *a)
     case 'O':
         risultato.risO.idReg = createUID();
         break;
+
+    /* Aggiunta di un paziente al registro */
+    case 'E':
+    {
+        /* Estraggo il paziente */
+        struct pazienteDet pazTemp = eval(((struct addPaziente *)a)->paziente).risP;
+
+        /* Caso in cui il registro sia vuoto */
+        if(((struct addPaziente*)a)->varReg->registro.paziente.cf == NULL) {
+            ((struct addPaziente*)a)->varReg->registro.paziente = pazTemp;
+            risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;
+            break;
+        }
+
+        /* Scorro la lista di pazienti per arrivare al primo posto disponibile */
+        struct registro *lastPaziente = &((struct addPaziente*)a)->varReg->registro;
+        if(lastPaziente->pazienteSucc != NULL) {
+                printf("while");
+                lastPaziente = lastPaziente->pazienteSucc;
+        }
+
+        /* Inseriamo il paziente */
+        struct registro *rTemp = malloc(sizeof(struct registro));
+        rTemp->idReg = ((struct addPaziente*)a)->varReg->registro.idReg;
+        rTemp->nodetype = 'E';
+        rTemp->paziente = pazTemp;
+        rTemp->indice = lastPaziente->indice + 1;
+        lastPaziente->pazienteSucc = rTemp;
+
+        risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;
+
+    break;
+    }
 
     /* Assegnamento */
     case '=':

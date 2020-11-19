@@ -181,6 +181,7 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp, stru
     }
 
     /* paziente3 = PAZIENTE("DGVMRC97P11G273M","11Set1997","Positivo","Sicilia",1) */
+    /* paziente5 = PAZIENTE("DGV73M","11Set1997","Positivo","Sicilia",1) */
     /* paziente4 = PAZIENTE(codice,"11Marzo1997","Positivo","Lombardia",1) */
     a->nodetype = nodetype;
     a->cf = cf;
@@ -208,5 +209,48 @@ struct ast *newRegistro(int nodetype) {
 
     /*registro1 = REGISTRO() */
 }
+
+struct ast *addPaziente(int nodetype,struct var* var, struct ast* paziente)
+{
+
+    struct addPaziente *a = malloc(sizeof(struct addPaziente));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    a->nodetype = nodetype;
+    a->varReg = var;
+    a->paziente = paziente;
+
+    return a;
+
+    /*struct registro *rTemp = malloc(sizeof(struct registro));
+
+    if (!rTemp)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    printf("1");
+    //1. rTemp sarà il nuovo registro. Uguaglio le info con il registro che gli passo
+    rTemp->idReg = registro->idReg;
+    rTemp->indice = registro->indice + 1;
+    rTemp->nodetype = registro->nodetype;
+
+    //2. Associo il nuovo paziente
+    rTemp->paziente = *paziente;
+
+    //3. Collego il registro vecchio al nuovo temporaneo
+    rTemp->pazienteSucc = registro;
+
+    printf("4");
+    //restituisco il nuovo registro
+    return rTemp;*/
+}
+
 
 

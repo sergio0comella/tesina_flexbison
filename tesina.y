@@ -24,6 +24,7 @@
 %token PAZIENTE 
 %token CF ESITOTAMP DATATAMP REGIONE ISRIC
 %token REGISTRO
+%token ADD
 
 %token <vr> USRVAR
 
@@ -74,6 +75,8 @@ stmt: exp
     | USRVAR '.' REGIONE                                          { $$ = newGet($1,4); }
     | USRVAR '.' ISRIC                                            { $$ = newGet($1,5); }
     | REGISTRO'('')'                                              { $$ = newRegistro('O'); }
+    | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente('E',$1,$5); }
+
 ;
 
 exp: NUMBER                     { $$ = newnum($1); }

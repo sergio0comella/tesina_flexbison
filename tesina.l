@@ -20,6 +20,7 @@ EXP ([Ee][-+]?[0-9]+)
 "isRicoverato"    { return ISRIC; }     /* Paziente e rispettivi "metodi" */
 
 "REGISTRO" { return REGISTRO; } 
+"ADD" { return ADD; }
 
 ">"     { yylval.cmp = 1; return CMP; }
 "<"     { yylval.cmp = 2; return CMP; }

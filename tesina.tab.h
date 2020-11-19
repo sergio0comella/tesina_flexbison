@@ -68,10 +68,11 @@ extern int yydebug;
     REGIONE = 269,                 /* REGIONE  */
     ISRIC = 270,                   /* ISRIC  */
     REGISTRO = 271,                /* REGISTRO  */
-    USRVAR = 272,                  /* USRVAR  */
-    EOL = 273,                     /* EOL  */
-    CMP = 274,                     /* CMP  */
-    UMINUS = 275                   /* UMINUS  */
+    ADD = 272,                     /* ADD  */
+    USRVAR = 273,                  /* USRVAR  */
+    EOL = 274,                     /* EOL  */
+    CMP = 275,                     /* CMP  */
+    UMINUS = 276                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -88,7 +89,7 @@ union YYSTYPE
     struct var *vr;
     int cmp;
 
-#line 92 "tesina.tab.h"
+#line 93 "tesina.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
