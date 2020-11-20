@@ -76,7 +76,8 @@ stmt: exp
     | USRVAR '.' ISRIC                                            { $$ = newGet($1,5); }
     | REGISTRO'('')'                                              { $$ = newRegistro('O'); }
     | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente('E',$1,$5); }
-
+    | USRVAR '.' GET '(' exp ')'                                  { $$ = newGetPaziente('T',$1,$5); }
+    | USRVAR '.' NPAZ '(' ')'                                     { $$ = newNumPazienti('I',$1); }
 ;
 
 exp: NUMBER                     { $$ = newnum($1); }
