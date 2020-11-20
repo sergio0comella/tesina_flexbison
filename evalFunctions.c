@@ -54,14 +54,13 @@ struct result eval(struct ast *a)
         /* Caso in cui il registro sia vuoto */
         if(((struct addPaziente*)a)->varReg->registro.paziente.cf == NULL) {
             ((struct addPaziente*)a)->varReg->registro.paziente = pazTemp;
-            risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;
+            risultato.risS = "Paziente aggiunto correttamente";
             break;
         }
 
         /* Scorro la lista di pazienti per arrivare al primo posto disponibile */
         struct registro *lastPaziente = &((struct addPaziente*)a)->varReg->registro;
         if(lastPaziente->pazienteSucc != NULL) {
-                printf("while");
                 lastPaziente = lastPaziente->pazienteSucc;
         }
 
@@ -73,7 +72,8 @@ struct result eval(struct ast *a)
         rTemp->indice = lastPaziente->indice + 1;
         lastPaziente->pazienteSucc = rTemp;
 
-        risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;
+        /*risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;*/
+        risultato.risS = "Paziente aggiunto correttamente";
 
     break;
     }
