@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include "tesina.h"
+#include "parameters.h"
+
 
 /* Funzione di valutazione dell'albero generale */
 struct result eval(struct ast *a)
@@ -17,17 +19,17 @@ struct result eval(struct ast *a)
     switch (a->nodetype)
     {
     /* Numeri (double) */
-    case 'D':
+    case NODE_DOUBLE:
         risultato.risD = ((struct numval *)a)->number;
         break;
 
     /* Stringa */
-    case 'S':
+    case NODE_STRING:
         risultato.risS = ((struct stringVal *)a)->string;
         break;
 
     /* Paziente */
-    case 'P':
+    case NODE_PAZIENTE:
         risultato.risP.cf = eval(((struct paziente *)a)->cf).risS;
         risultato.risP.dataTamp = eval(((struct paziente *)a)->dataTamp).risS;
         risultato.risP.esitoTamp = eval(((struct paziente *)a)->esitoTamp).risS;
@@ -36,18 +38,17 @@ struct result eval(struct ast *a)
         break;
 
     /* Get valori Paziente */
-    case 'G':
+    case NODE_GET:
         risultato.risS = ((struct get *)a)->getVal;
         break;
     
     /* Inizializzazione registro */
-    case 'O':
+    case NODE_REGISTRO:
         risultato.risO.idReg = createUID();
         break;
 
     /* Aggiunta di un paziente al registro */
-    case 'E':
-    {
+    case NODE_ADD_PAZIENTE:{
         /* Estraggo il paziente */
         struct pazienteDet pazTemp = eval(((struct addPaziente *)a)->paziente).risP;
 
@@ -60,14 +61,14 @@ struct result eval(struct ast *a)
 
         /* Scorro la lista di pazienti per arrivare al primo posto disponibile */
         struct registro *lastPaziente = &((struct addPaziente*)a)->varReg->registro;
-        if(lastPaziente->pazienteSucc != NULL) {
+        while(lastPaziente->pazienteSucc != NULL) {
                 lastPaziente = lastPaziente->pazienteSucc;
         }
 
         /* Inseriamo il paziente */
         struct registro *rTemp = malloc(sizeof(struct registro));
-        rTemp->idReg = ((struct addPaziente*)a)->varReg->registro.idReg;
-        rTemp->nodetype = 'E';
+        rTemp->idReg = ((struct addPaziente *)a)->varReg->registro.idReg;
+        rTemp->nodetype = NODE_REGISTRO;
         rTemp->paziente = pazTemp;
         rTemp->indice = lastPaziente->indice + 1;
         lastPaziente->pazienteSucc = rTemp;
@@ -79,37 +80,28 @@ struct result eval(struct ast *a)
     }
 
     /* Assegnamento */
-    case '=':
+    case NODE_EQUAL:
     {
         struct result risAsgn = evalAsgn(a);
 
-        if (risAsgn.risD != 0)
-        {
+        if (risAsgn.risD != 0) {
             risultato.risD = risAsgn.risD;
             break;
-        }
-        if (risAsgn.risS == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0)
-        {
+        } if (risAsgn.risS == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0) {
             risultato.risP = risAsgn.risP;
             break;
-        }
-        if (risAsgn.risP.cf == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0)
-        {
+        } if (risAsgn.risP.cf == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0) {
             risultato.risS = risAsgn.risS;
             break;
-        }
-        if (risAsgn.risO.idReg != 0)
-        {
+        } if (risAsgn.risO.idReg != 0) {
             risultato.risO.idReg = risAsgn.risO.idReg;
             break;
         }
-
-
         break;
     }
 
     /* Reference */
-    case 'R':
+    case NODE_REFERENCE:
         if (((struct ref *)a)->var->varType == 'S')
         {
             risultato.risS = ((struct ref *)a)->var->string;
@@ -127,7 +119,7 @@ struct result eval(struct ast *a)
         break;
 
     /* IF */
-    case 'I':
+    case NODE_IF:
         if (eval(((struct cond *)a)->cond).risD != 0)
         {
             risultato = eval(((struct cond *)a)->then);
@@ -147,7 +139,7 @@ struct result eval(struct ast *a)
         }
 
     /* WHILE */
-    case 'W':
+    case NODE_WHILE:
         while (eval(((struct cond *)a)->cond).risD != 0)
         {
             risultato = eval(((struct cond *)a)->then);

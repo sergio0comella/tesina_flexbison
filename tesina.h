@@ -121,7 +121,6 @@ struct ast *newRegistro(int nodetype);
 //E
 struct ast *addPaziente(int nodetype,struct var* varReg, struct ast* paziente);
 
-
 /*cancellazione nodi*/
 void treefree(struct ast *);
 
