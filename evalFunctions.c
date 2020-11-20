@@ -49,42 +49,13 @@ struct result eval(struct ast *a)
         break;
 
     /* Aggiunta di un paziente al registro */
-    case NODE_ADD_PAZIENTE:{
-
-        /* Estraggo il paziente */
-        struct pazienteDet pazTemp = eval(((struct addPaziente *)a)->paziente).risP;
-
-        if(pazTemp.cf == NULL) {
-            yyerror("Paziente non istanziato");
-            exit(0);
+    case NODE_ADD_PAZIENTE:
+        if(addPazienteToRegistro(a)){
+            risultato.risS = "Paziente aggiunto con successo";
+        }else{
+            risultato.risS = "Impossibile inserire il paziente";
         }
-
-        /* Caso in cui il registro sia vuoto */
-        if(((struct addPaziente*)a)->varReg->registro.paziente.cf == NULL) {
-            ((struct addPaziente*)a)->varReg->registro.paziente = pazTemp;
-            risultato.risS = "Paziente aggiunto correttamente";
-            break;
-        }
-
-        /* Scorro la lista di pazienti per arrivare al primo posto disponibile */
-        struct registro *lastPaziente = &((struct addPaziente*)a)->varReg->registro;
-        while(lastPaziente->pazienteSucc != NULL) {
-                lastPaziente = lastPaziente->pazienteSucc;
-        }
-
-        /* Inseriamo il paziente */
-        struct registro *rTemp = malloc(sizeof(struct registro));
-        rTemp->idReg = ((struct addPaziente *)a)->varReg->registro.idReg;
-        rTemp->nodetype = NODE_REGISTRO;
-        rTemp->paziente = pazTemp;
-        rTemp->indice = lastPaziente->indice + 1;
-        lastPaziente->pazienteSucc = rTemp;
-
-        /*risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;*/
-        risultato.risS = "Paziente aggiunto correttamente";
-
-    break;
-    }
+        break;
 
     /* Estrazione di un paziente dal registro dato il codice fiscale */
     case NODE_GETPAZ:
@@ -108,80 +79,18 @@ struct result eval(struct ast *a)
 
     /* Ottenere il numero di pazienti di un registro */
     case NODE_NUMPAZ:
-    {
-        int counter = 0;
-
-        struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
-
-        if(reg->paziente.cf != 0) {
-            counter += 1;
-        }
-
-        while(reg->pazienteSucc != NULL) {
-            reg = reg->pazienteSucc;
-            counter += 1;
-        }
-
-        risultato.risD = counter;
-
-    break;
-    }
+        risultato.risD = getPazientiTotali(a);
+        break;
 
     /* Ottenere il numero di pazienti positivi*/
     case NODE_NUMPOS:
-    {
-        int counter = 0;
-
-        struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
-
-        if(reg->paziente.cf == NULL) {
-            risultato.risD = 0;
-            break;
-        }
-
-        while(reg->pazienteSucc != NULL) {
-            if(!strcasecmp(reg->paziente.esitoTamp,"\"positivo\"")) {
-                counter += 1;
-            }
-            reg = reg->pazienteSucc;
-        }
-
-        if(!strcasecmp(reg->paziente.esitoTamp,"\"positivo\"")) {
-            counter += 1;
-        }
-
-        risultato.risD = counter;
-
-    break;
-    }
+        risultato.risD = getTotalePositivi(a);
+        break;
 
     /* Ottenere il numero di pazienti ricoverati */
     case NODE_NUMRIC:
-    {
-        int counter = 0;
-
-        struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
-
-        if(reg->paziente.cf == 0) {
-            risultato.risD = 0;
-            break;
-        }
-
-        while(reg->pazienteSucc != NULL) {
-            if(reg->paziente.isRicoverato == 1) {
-                counter += 1;
-            }
-            reg = reg->pazienteSucc;
-        }
-
-        if(reg->paziente.isRicoverato == 1) {
-            counter += 1;
-        }
-        
-        risultato.risD = counter;
-
-    break;
-    }
+        risultato.risD = getTotaleRicoverati(a);
+        break;
 
     /* Assegnamento */
     case NODE_EQUAL:

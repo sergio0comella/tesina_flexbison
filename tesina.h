@@ -164,3 +164,8 @@ struct result eval(struct ast *a);
 double evalExpr(struct ast *a);
 struct result evalAsgn(struct ast *a);
 
+/* Functions Registro*/
+int addPazienteToRegistro(struct ast *a);
+int getTotalePositivi(struct ast *a);
+int getTotaleRicoverati(struct ast *a);
+int getPazientiTotali(struct ast *a);

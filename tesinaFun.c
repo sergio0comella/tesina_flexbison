@@ -136,7 +136,7 @@ void treefree(struct ast *a)
     }
 }
 
-/* Funzione per generare l'ID del registro in maniera univoca e casuale */
+/* Funzione per generare un ID casuale per il registro */
 int createUID() {
     
     srand(time(0));
