@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 #include "tesina.h"
 
 struct ast *newast(int nodetype, struct ast *l, struct ast *r)
@@ -82,6 +83,10 @@ struct ast *newGet(struct var *vr, int c)
     {
         yyerror("out of space");
         exit(0);
+    }
+
+    if(vr->paziente.cf == NULL) {
+      yyerror("Paziente non istanziato"); 
     }
 
     a->nodetype = 'G';
@@ -180,9 +185,12 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp, stru
         exit(0);
     }
 
-    /* paziente3 = PAZIENTE("DGVMRC97P11G273M","11Set1997","Positivo","Sicilia",1) */
+
+    /* paziente3 = PAZIENTE("DGVmrC97P11G273M","11Set1997","Positivo","Sicilia",1) */
     /* paziente5 = PAZIENTE("DGV73M","11Set1997","Positivo","Sicilia",1) */
-    /* paziente4 = PAZIENTE(codice,"11Marzo1997","Positivo","Lombardia",1) */
+    /* paziente4 = PAZIENTE("fff","11Marzo1997","Positivo","Lombardia",1) */
+    /* paziente4 = PAZIENTE("ffff","11Marzo1997","Negativo","Lombardia",0) */
+    
     a->nodetype = nodetype;
     a->cf = cf;
     a->dataTamp = dataTamp;
@@ -210,7 +218,7 @@ struct ast *newRegistro(int nodetype) {
     /*registro1 = REGISTRO() */
 }
 
-struct ast *addPaziente(int nodetype,struct var* var, struct ast* paziente)
+struct ast *addPaziente(struct var* var, struct ast* paziente)
 {
 
     struct addPaziente *a = malloc(sizeof(struct addPaziente));
@@ -221,35 +229,103 @@ struct ast *addPaziente(int nodetype,struct var* var, struct ast* paziente)
         exit(0);
     }
 
-    a->nodetype = nodetype;
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");
+      exit(0);  
+    }
+
+    a->nodetype = 'E';
     a->varReg = var;
     a->paziente = paziente;
 
     return a;
 
-    /*struct registro *rTemp = malloc(sizeof(struct registro));
+}
 
-    if (!rTemp)
+struct ast *getPaziente(struct var* var, struct ast* codFis) {
+
+    struct getPaziente *a = malloc(sizeof(struct getPaziente));
+
+    if (!a)
     {
         yyerror("out of space");
         exit(0);
     }
 
-    printf("1");
-    //1. rTemp sarà il nuovo registro. Uguaglio le info con il registro che gli passo
-    rTemp->idReg = registro->idReg;
-    rTemp->indice = registro->indice + 1;
-    rTemp->nodetype = registro->nodetype;
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");  
+    }
 
-    //2. Associo il nuovo paziente
-    rTemp->paziente = *paziente;
+    a->nodetype = 'T';
+    a->varReg = var;
+    a->key = codFis;
 
-    //3. Collego il registro vecchio al nuovo temporaneo
-    rTemp->pazienteSucc = registro;
+    return a;
 
-    printf("4");
-    //restituisco il nuovo registro
-    return rTemp;*/
+}
+
+struct ast *numPazienti(struct var* var) {
+
+    struct numPazienti *a = malloc(sizeof(struct numPazienti));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");  
+    }
+
+    a->nodetype = 'Z';
+    a->varReg = var;
+
+    return a;
+
+}
+
+
+struct ast *numPositivi(struct var* var) {
+
+    struct numPositivi *a = malloc(sizeof(struct numPositivi));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");  
+    }
+
+    a->nodetype = 'B';
+    a->varReg = var;
+
+    return a;
+
+}
+
+struct ast *numRicoverati(struct var* var) {
+
+    struct numRicoverati *a = malloc(sizeof(struct numRicoverati));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");  
+    }
+
+    a->nodetype = 'C';
+    a->varReg = var;
+
+    return a;
+
 }
 
 

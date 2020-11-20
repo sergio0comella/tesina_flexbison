@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 #include "tesina.h"
 #include "parameters.h"
 
@@ -49,8 +50,14 @@ struct result eval(struct ast *a)
 
     /* Aggiunta di un paziente al registro */
     case NODE_ADD_PAZIENTE:{
+
         /* Estraggo il paziente */
         struct pazienteDet pazTemp = eval(((struct addPaziente *)a)->paziente).risP;
+
+        if(pazTemp.cf == NULL) {
+            yyerror("Paziente non istanziato");
+            exit(0);
+        }
 
         /* Caso in cui il registro sia vuoto */
         if(((struct addPaziente*)a)->varReg->registro.paziente.cf == NULL) {
@@ -75,6 +82,103 @@ struct result eval(struct ast *a)
 
         /*risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;*/
         risultato.risS = "Paziente aggiunto correttamente";
+
+    break;
+    }
+
+    /* Estrazione di un paziente dal registro dato il codice fiscale */
+    case NODE_GETPAZ:
+    {
+        char *cf = eval(((struct getPaziente *)a)->key).risS;
+      
+        struct registro *reg = &((struct getPaziente *)a)->varReg->registro;
+        
+        while(strcasecmp(reg->paziente.cf,cf)) {
+            if(reg->pazienteSucc == NULL) {
+                risultato.risS = "Paziente non trovato";
+                break;
+            }
+            reg = reg->pazienteSucc;
+        }
+
+        risultato.risP = reg->paziente;
+
+    break;
+    }
+
+    /* Ottenere il numero di pazienti di un registro */
+    case NODE_NUMPAZ:
+    {
+        int counter = 0;
+
+        struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
+
+        if(reg->paziente.cf != 0) {
+            counter += 1;
+        }
+
+        while(reg->pazienteSucc != NULL) {
+            reg = reg->pazienteSucc;
+            counter += 1;
+        }
+
+        risultato.risD = counter;
+
+    break;
+    }
+
+    /* Ottenere il numero di pazienti positivi*/
+    case NODE_NUMPOS:
+    {
+        int counter = 0;
+
+        struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
+
+        if(reg->paziente.cf == NULL) {
+            risultato.risD = 0;
+            break;
+        }
+
+        while(reg->pazienteSucc != NULL) {
+            if(!strcasecmp(reg->paziente.esitoTamp,"\"positivo\"")) {
+                counter += 1;
+            }
+            reg = reg->pazienteSucc;
+        }
+
+        if(!strcasecmp(reg->paziente.esitoTamp,"\"positivo\"")) {
+            counter += 1;
+        }
+
+        risultato.risD = counter;
+
+    break;
+    }
+
+    /* Ottenere il numero di pazienti ricoverati */
+    case NODE_NUMRIC:
+    {
+        int counter = 0;
+
+        struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
+
+        if(reg->paziente.cf == 0) {
+            risultato.risD = 0;
+            break;
+        }
+
+        while(reg->pazienteSucc != NULL) {
+            if(reg->paziente.isRicoverato == 1) {
+                counter += 1;
+            }
+            reg = reg->pazienteSucc;
+        }
+
+        if(reg->paziente.isRicoverato == 1) {
+            counter += 1;
+        }
+        
+        risultato.risD = counter;
 
     break;
     }
@@ -174,7 +278,7 @@ struct result eval(struct ast *a)
         risultato.risD = evalExpr(a);
         break;
 
-    case 'L':
+    case NODE_SEQOP:
         eval(a->l);
         eval(a->r);
         break;

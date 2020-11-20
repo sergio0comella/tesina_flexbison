@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include "tesina.h"
 
 /* Funzione di hash che data una stringa ne restiusce il corrispetivo intero */

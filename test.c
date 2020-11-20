@@ -2,24 +2,16 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 #include "tesina.h"
 
 int main(int argc, char const *argv[])
-{
+{   
+    char *str = strdup("AFFFF");
 
-    
-
-    struct result risAsgn = evalAsgn();
-    return 0;
-}
-
-struct result evalAsgn() {
-
-    struct result risultato;
-    risultato.risD = 0;
-    risultato.risS = NULL;
-    risultato.risP = NULL;
-
-    return risultato;
+    for(int i = 0; str[i]; i++){
+        str[i] = tolower(str[i]);
+        printf("char: %c\n", str[i]);
+    }
 }
 

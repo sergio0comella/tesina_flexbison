@@ -99,10 +99,36 @@ struct paziente {
     struct ast *isRicoverato;
 };
 
+/* Struttura per gestire l'aggiunta di un paziente a un registro */
 struct addPaziente {
     int nodetype;
     struct var *varReg;  
     struct ast *paziente;
+};
+
+/* Struttura per ottenere un paziente da un registro dato il codice fiscale */
+struct getPaziente {
+    int nodetype;
+    struct var *varReg; 
+    struct ast *key;
+};
+
+/* Struttura per ottenre il numero di pazienti di un registro */
+struct numPazienti {
+    int nodetype;
+    struct var *varReg; 
+};
+
+/* Struttura per ottenre il numero di positivi di un registro */
+struct numPositivi {
+    int nodetype;
+    struct var *varReg; 
+};
+
+/* Struttura per ottenre il numero di ricoverati di un registro */
+struct numRicoverati {
+    int nodetype;
+    struct var *varReg; 
 };
 
 /*costruzione AST*/
@@ -119,7 +145,15 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struc
 //O
 struct ast *newRegistro(int nodetype);
 //E
-struct ast *addPaziente(int nodetype,struct var* varReg, struct ast* paziente);
+struct ast *addPaziente(struct var* varReg, struct ast* paziente);
+//T
+struct ast *getPaziente(struct var* var, struct ast* codFis);
+//Z
+struct ast *numPazienti(struct var* var);
+//B
+struct ast *numPositivi(struct var* var);
+//C
+struct ast *numRicoverati(struct var* var);
 
 /*cancellazione nodi*/
 void treefree(struct ast *);

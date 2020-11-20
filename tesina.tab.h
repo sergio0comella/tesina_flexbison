@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.7.3.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,6 +31,10 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
 #ifndef YY_YY_TESINA_TAB_H_INCLUDED
 # define YY_YY_TESINA_TAB_H_INCLUDED
 /* Debug traces.  */
@@ -40,39 +45,47 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NUMBER = 258,
-    STRING = 259,
-    DATE = 260,
-    IF = 261,
-    THEN = 262,
-    ELSE = 263,
-    WHILE = 264,
-    PAZIENTE = 265,
-    CF = 266,
-    ESITOTAMP = 267,
-    DATATAMP = 268,
-    REGIONE = 269,
-    ISRIC = 270,
-    REGISTRO = 271,
-    ADD = 272,
-    USRVAR = 273,
-    EOL = 274,
-    CMP = 275,
-    UMINUS = 276
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NUMBER = 258,                  /* NUMBER  */
+    STRING = 259,                  /* STRING  */
+    DATE = 260,                    /* DATE  */
+    IF = 261,                      /* IF  */
+    THEN = 262,                    /* THEN  */
+    ELSE = 263,                    /* ELSE  */
+    WHILE = 264,                   /* WHILE  */
+    PAZIENTE = 265,                /* PAZIENTE  */
+    CF = 266,                      /* CF  */
+    ESITOTAMP = 267,               /* ESITOTAMP  */
+    DATATAMP = 268,                /* DATATAMP  */
+    REGIONE = 269,                 /* REGIONE  */
+    ISRIC = 270,                   /* ISRIC  */
+    REGISTRO = 271,                /* REGISTRO  */
+    ADD = 272,                     /* ADD  */
+    GET = 273,                     /* GET  */
+    NPAZ = 274,                    /* NPAZ  */
+    NPOS = 275,                    /* NPOS  */
+    NRIC = 276,                    /* NRIC  */
+    USRVAR = 277,                  /* USRVAR  */
+    EOL = 278,                     /* EOL  */
+    CMP = 279,                     /* CMP  */
+    UMINUS = 280                   /* UMINUS  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-
 union YYSTYPE
 {
-#line 11 "tesina.y" /* yacc.c:1909  */
+#line 11 "tesina.y"
 
     struct ast *a;
     double d;
@@ -80,9 +93,9 @@ union YYSTYPE
     struct var *vr;
     int cmp;
 
-#line 84 "tesina.tab.h" /* yacc.c:1909  */
-};
+#line 97 "tesina.tab.h"
 
+};
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
