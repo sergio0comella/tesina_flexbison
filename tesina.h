@@ -2,22 +2,22 @@ extern int yylineno;
 void yyerror(char *s, ...);
 
 /* Paziente details, contiene i dettagli del paziente memorizzati dalla variabile */
-struct pazienteDet {
+typedef struct pazienteDet {
     char *cf;
     char *dataTamp;
     char *esitoTamp;
     char *regione;
     int isRicoverato;   
-};
+} PazienteDet;
 
 /* Registro dei pazienti ovvero una lista */ 
-struct registro {
+typedef struct registro {
     int nodetype;
     int idReg;
     int indice;
     struct pazienteDet paziente;
     struct registro *pazienteSucc;
-};
+} Registro;
 
 /* Risultati delle valutizioni delle espressioni memorizzate nei rispettivi tipi */
 struct result {
@@ -169,3 +169,4 @@ int addPazienteToRegistro(struct ast *a);
 int getTotalePositivi(struct ast *a);
 int getTotaleRicoverati(struct ast *a);
 int getPazientiTotali(struct ast *a);
+PazienteDet getPazienteByCf(struct ast *a);

@@ -5,6 +5,9 @@
 #include "tesina.h"
 #include "parameters.h"
 
+#define forEach(item, list) \
+    for (item = list; item != NULL; item = item->pazienteSucc)
+
 int addPazienteToRegistro(struct ast *a)
 {
 
@@ -30,6 +33,7 @@ int addPazienteToRegistro(struct ast *a)
        }
         lastPaziente = lastPaziente->pazienteSucc;
     }
+    /*controllo anche l'ultimo elemento che viene escluso dal while*/
     if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
         return 0;
     }
@@ -48,24 +52,15 @@ int addPazienteToRegistro(struct ast *a)
 
 //Restituisce il totale dei positivi in un dato registro
 int getTotalePositivi(struct ast *a){
-
-    int counter = 0;
-    struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
     
-    //se il primo paziente non c'è allora il registro è vuoto
-    if (reg->paziente.cf == NULL) {
-        return 0;
-    }
+    int counter = 0;
 
-    while (reg->pazienteSucc != NULL){
-        if (!strcasecmp(reg->paziente.esitoTamp, "\"positivo\"")){
+    Registro *reg = &((struct numPazienti *)a)->varReg->registro;
+    Registro *iter;
+    forEach(iter, reg){
+        if (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")){
             counter += 1;
         }
-        reg = reg->pazienteSucc;
-    }
-
-    if (!strcasecmp(reg->paziente.esitoTamp, "\"positivo\"")) {
-        counter += 1;
     }
 
     return counter;
@@ -74,7 +69,7 @@ int getTotalePositivi(struct ast *a){
 //Restituisce il totale dei ricoverati in un dato registro
 int getTotaleRicoverati(struct ast *a) {
     int counter = 0;
-
+/*
     struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
 
     if (reg->paziente.cf == 0){
@@ -92,22 +87,41 @@ int getTotaleRicoverati(struct ast *a) {
         counter += 1;
     }
 
+*/ //replaced with foreach
+    Registro *reg = &((struct numPazienti *)a)->varReg->registro;
+    Registro *iter;
+    forEach(iter, reg)
+    {
+        if (iter->paziente.isRicoverato == 1){
+            counter += 1;
+        }
+    }
+
     return counter;
 }
 
+//Restituisce il totale dei pazienti in un dato registro
 int getPazientiTotali(struct ast *a){
     int counter = 0;
 
-    struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
-
-    if (reg->paziente.cf != 0){
-        counter += 1;
+    Registro *reg = &((struct numPazienti *)a)->varReg->registro;
+    Registro *iter;
+    forEach(iter, reg){
+        counter++;
     }
-
-    while (reg->pazienteSucc != NULL){
-        reg = reg->pazienteSucc;
-        counter += 1;
-    }
-
     return counter;
+}
+
+
+PazienteDet getPazienteByCf(struct ast *a){
+    char *cf = eval(((struct getPaziente *)a)->key).risS;
+
+    Registro *reg = &((struct getPaziente *)a)->varReg->registro;
+    Registro *iter;
+    forEach(iter, reg){
+        if (!strcasecmp(iter->paziente.cf, cf)){
+            return iter->paziente;
+        }
+    }
+    
 }

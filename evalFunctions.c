@@ -59,23 +59,8 @@ struct result eval(struct ast *a)
 
     /* Estrazione di un paziente dal registro dato il codice fiscale */
     case NODE_GETPAZ:
-    {
-        char *cf = eval(((struct getPaziente *)a)->key).risS;
-      
-        struct registro *reg = &((struct getPaziente *)a)->varReg->registro;
-        
-        while(strcasecmp(reg->paziente.cf,cf)) {
-            if(reg->pazienteSucc == NULL) {
-                risultato.risS = "Paziente non trovato";
-                break;
-            }
-            reg = reg->pazienteSucc;
-        }
-
-        risultato.risP = reg->paziente;
-
-    break;
-    }
+        risultato.risP = getPazienteByCf(a);
+        break;
 
     /* Ottenere il numero di pazienti di un registro */
     case NODE_NUMPAZ:
