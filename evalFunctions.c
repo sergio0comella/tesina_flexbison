@@ -53,7 +53,7 @@ struct result eval(struct ast *a)
         if(addPazienteToRegistro(a)){
             risultato.risS = "Paziente aggiunto con successo";
         }else{
-            risultato.risS = "Impossibile inserire il paziente";
+            risultato.risS = "Paziente già inserito in questo registro";
         }
         break;
 
