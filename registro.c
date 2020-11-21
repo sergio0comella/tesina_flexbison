@@ -25,7 +25,13 @@ int addPazienteToRegistro(struct ast *a)
     /* Scorro la lista di pazienti per arrivare al primo posto disponibile */
     struct registro *lastPaziente = &((struct addPaziente *)a)->varReg->registro;
     while (lastPaziente->pazienteSucc != NULL) {
+       if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+            return 0;       
+       }
         lastPaziente = lastPaziente->pazienteSucc;
+    }
+    if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+        return 0;
     }
 
     /* Inseriamo il paziente */
