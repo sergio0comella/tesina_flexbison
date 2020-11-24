@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <regex.h>
 #include "tesina.h"
 
 /* Funzione di hash che data una stringa ne restiusce il corrispetivo intero */
@@ -161,6 +162,18 @@ void printNotValidCommand(){
     printf("\033[0;31m");
     printf("Ultimo comando inserito non riconosciuto. Riprova.\n");
     printf("\033[0m");
+}
+
+int match(const char *string, const char *pattern)
+{
+    regex_t re;
+    if (regcomp(&re, pattern, REG_EXTENDED | REG_NOSUB) != 0)
+        return 0;
+    int status = regexec(&re, string, 0, NULL, 0);
+    regfree(&re);
+    if (status != 0)
+        return 0;
+    return 1;
 }
 
 int main(int argc, char const *argv[])

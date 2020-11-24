@@ -30,14 +30,21 @@ struct result eval(struct ast *a)
         break;
 
     /* Paziente */
-    case NODE_PAZIENTE:
+    case NODE_PAZIENTE:{
+        char *dataTamp = eval(((struct paziente *)a)->dataTamp).risS;
+        char *regexDate = REGEX_DATA;
+        if (!match(dataTamp, regexDate)){
+            printf("Formato data errato. Formato valido: dd-mm-yyyy.\n");
+            exit(0); //TODO liberare nodo
+            break;
+        }
         risultato.risP.cf = eval(((struct paziente *)a)->cf).risS;
-        risultato.risP.dataTamp = eval(((struct paziente *)a)->dataTamp).risS;
+        risultato.risP.dataTamp = dataTamp;
         risultato.risP.esitoTamp = eval(((struct paziente *)a)->esitoTamp).risS;
         risultato.risP.regione = eval(((struct paziente *)a)->regione).risS;
         risultato.risP.isRicoverato = ((struct numval *)(((struct paziente *)a)->isRicoverato))->number;
         break;
-
+    }
     /* Get valori Paziente */
     case NODE_GET:
         risultato.risS = ((struct get *)a)->getVal;
@@ -208,22 +215,24 @@ struct result evalAsgn(struct ast *a)
 
     if (risAnnidato.risD != 0) 
     {
-        ((struct asgn *)a)->var->varType = 'D';
+        ((struct asgn *)a)->var->varType = NODE_DOUBLE;
         risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD;
     }
+
     if (risAnnidato.risS == NULL && risAnnidato.risD == 0 && risAnnidato.risO.idReg == 0) 
     {
-        ((struct asgn *)a)->var->varType = 'P';
+        ((struct asgn *)a)->var->varType = NODE_PAZIENTE;
         risultato.risP = ((struct asgn *)a)->var->paziente = eval(a->r).risP;
     }
+
     if (risAnnidato.risP.cf == NULL && risAnnidato.risD == 0 && risAnnidato.risO.idReg == 0)
     {
-        ((struct asgn *)a)->var->varType = 'S';
+        ((struct asgn *)a)->var->varType = NODE_STRING;
         risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
     }
 
     if (risAnnidato.risO.idReg != 0) {
-        ((struct asgn *)a)->var->varType = 'O';
+        ((struct asgn *)a)->var->varType = NODE_REGISTRO;
         risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = eval(a->r).risO.idReg;
     }
 

@@ -405,7 +405,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   148
+#define YYLAST   152
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  39
@@ -465,7 +465,7 @@ static const yytype_uint8 yyrline[] =
 {
        0,    50,    50,    51,    52,    53,    54,    55,    59,    60,
       61,    64,    65,    68,    69,    70,    71,    72,    73,    74,
-      75,    76,    77,    78,    79,    80,    83,    84,    85,    86,
+      75,    76,    77,    78,    79,    82,    83,    84,    85,    86,
       87,    88,    89,    90,    91,    92,    93,    94,    95,    96
 };
 #endif
@@ -508,14 +508,14 @@ static const yytype_uint16 yytoknum[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int8 yypact[] =
+static const yytype_int16 yypact[] =
 {
      -36,    37,   -36,   -14,   -36,   -36,   -36,    70,    70,   -27,
      -10,   -22,   -36,    28,    28,    28,     5,    -6,   117,   -36,
      -19,    23,    28,     2,    70,    95,    -8,   -36,   -36,    54,
      -36,   -36,    70,    20,    28,    28,    28,    28,    70,    70,
       49,   -36,    19,   -36,   -36,   -36,   -36,   -36,    13,    15,
-     -36,   -36,   -36,    27,    75,   -36,    32,   -36,   -16,   -16,
+     -36,   -36,   -36,    27,   130,   -36,    32,   -36,   -16,   -16,
      -36,   -36,    58,    -7,   -36,    28,    70,    28,    28,    70,
       70,   102,   -20,    60,    91,   -36,   -36,    28,   -36,   -36,
      -36,   107,    28,   112,    28,    96,   -36
@@ -526,15 +526,15 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       2,     0,     1,     0,    26,    34,    35,     0,     0,     0,
-       0,    36,     6,     0,     0,     0,     0,     0,    13,     7,
-       0,     0,     0,     0,     0,     0,    36,    33,    31,     0,
+       2,     0,     1,     0,    25,    33,    34,     0,     0,     0,
+       0,    35,     6,     0,     0,     0,     0,     0,    13,     7,
+       0,     0,     0,     0,     0,     0,    35,    32,    30,     0,
        5,     3,     0,     0,     0,     0,     0,     0,     0,     0,
        0,    22,    15,    17,    18,    19,    20,    21,     0,     0,
-      37,    38,    39,     0,     0,    32,    14,     4,    27,    28,
-      29,    30,     8,    11,    10,     0,     0,     0,     0,     0,
+      36,    37,    38,     0,     0,    31,    14,     4,    26,    27,
+      28,    29,     8,    11,    10,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     9,    12,     0,    23,    24,
-      25,     0,     0,     0,     0,     0,    16
+      39,     0,     0,     0,     0,     0,    16
 };
 
   /* YYPGOTO[NTERM-NUM].  */
@@ -563,12 +563,13 @@ static const yytype_int8 yytable[] =
       11,    12,    68,    15,    81,    13,    69,     0,    14,    83,
       72,    85,    15,     4,     5,     6,    34,    35,    36,    37,
        9,    34,    35,    36,    37,    65,    10,    34,    35,    36,
-      37,    55,     0,    11,    50,    51,    52,    79,    13,     0,
+      37,    55,     0,    11,     0,     0,     0,    79,    13,     0,
        0,    14,     0,     0,     0,    15,    43,    44,    45,    46,
       47,     0,    48,    49,    50,    51,    52,    53,    34,    35,
       36,    37,     0,    34,    35,    36,    37,     0,    80,    34,
       35,    36,    37,    86,    34,    35,    36,    37,    77,    34,
-      35,    36,    37,    82,    34,    35,    36,    37,    84
+      35,    36,    37,    82,    34,    35,    36,    37,    84,    50,
+      51,    52,    53
 };
 
 static const yytype_int8 yycheck[] =
@@ -582,12 +583,13 @@ static const yytype_int8 yycheck[] =
       23,    24,    35,    35,    77,    28,     8,    -1,    31,    82,
       66,    84,    35,     3,     4,     5,    27,    28,    29,    30,
       10,    27,    28,    29,    30,    36,    16,    27,    28,    29,
-      30,    37,    -1,    23,    19,    20,    21,    37,    28,    -1,
+      30,    37,    -1,    23,    -1,    -1,    -1,    37,    28,    -1,
       -1,    31,    -1,    -1,    -1,    35,    11,    12,    13,    14,
       15,    -1,    17,    18,    19,    20,    21,    22,    27,    28,
       29,    30,    -1,    27,    28,    29,    30,    -1,    37,    27,
       28,    29,    30,    37,    27,    28,    29,    30,    36,    27,
-      28,    29,    30,    36,    27,    28,    29,    30,    36
+      28,    29,    30,    36,    27,    28,    29,    30,    36,    19,
+      20,    21,    22
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -610,7 +612,7 @@ static const yytype_uint8 yyr1[] =
 {
        0,    39,    40,    40,    40,    40,    40,    40,    41,    41,
       41,    42,    42,    43,    43,    43,    43,    43,    43,    43,
-      43,    43,    43,    43,    43,    43,    44,    44,    44,    44,
+      43,    43,    43,    43,    43,    44,    44,    44,    44,    44,
       44,    44,    44,    44,    44,    44,    44,    44,    44,    44
 };
 
@@ -619,8 +621,8 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     3,     4,     3,     2,     3,     4,     6,
        4,     1,     3,     1,     3,     3,    12,     3,     3,     3,
-       3,     3,     3,     6,     6,     6,     1,     3,     3,     3,
-       3,     2,     3,     2,     1,     1,     1,     3,     3,     3
+       3,     3,     3,     6,     6,     1,     3,     3,     3,     3,
+       2,     3,     2,     1,     1,     1,     3,     3,     3,     6
 };
 
 
@@ -1299,215 +1301,215 @@ yyreduce:
         case 3:
 #line 51 "tesina.y" /* yacc.c:1646  */
     {processTree('P',(yyvsp[-1].a)); /*treefree($2);*/ printf(""); }
-#line 1303 "tesina.tab.c" /* yacc.c:1646  */
+#line 1305 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
 #line 52 "tesina.y" /* yacc.c:1646  */
     {processTree('N',(yyvsp[-2].a)); /*treefree($2);*/ printf(""); }
-#line 1309 "tesina.tab.c" /* yacc.c:1646  */
+#line 1311 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
 #line 53 "tesina.y" /* yacc.c:1646  */
     {processTree('N',(yyvsp[-1].a)); /*treefree($2);*/ printf(""); }
-#line 1315 "tesina.tab.c" /* yacc.c:1646  */
+#line 1317 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
 #line 54 "tesina.y" /* yacc.c:1646  */
     { printf(""); }
-#line 1321 "tesina.tab.c" /* yacc.c:1646  */
+#line 1323 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
 #line 55 "tesina.y" /* yacc.c:1646  */
     { yyerrok; yyclearin;}
-#line 1327 "tesina.tab.c" /* yacc.c:1646  */
+#line 1329 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
 #line 59 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newCond('I',(yyvsp[-2].a),(yyvsp[0].a),NULL); }
-#line 1333 "tesina.tab.c" /* yacc.c:1646  */
+#line 1335 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
 #line 60 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newCond('I',(yyvsp[-4].a),(yyvsp[-2].a),(yyvsp[0].a)); }
-#line 1339 "tesina.tab.c" /* yacc.c:1646  */
+#line 1341 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
 #line 61 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newCond('W',(yyvsp[-2].a),(yyvsp[0].a),NULL); }
-#line 1345 "tesina.tab.c" /* yacc.c:1646  */
+#line 1347 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
 #line 65 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newast('L', (yyvsp[-2].a), (yyvsp[0].a)); }
-#line 1351 "tesina.tab.c" /* yacc.c:1646  */
+#line 1353 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
 #line 69 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newCmp((yyvsp[-1].cmp), (yyvsp[-2].a), (yyvsp[0].a)); }
-#line 1357 "tesina.tab.c" /* yacc.c:1646  */
+#line 1359 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
 #line 70 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newasgn((yyvsp[-2].vr), (yyvsp[0].a)); }
-#line 1363 "tesina.tab.c" /* yacc.c:1646  */
+#line 1365 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
 #line 71 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newPaziente('P',(yyvsp[-9].a),(yyvsp[-7].a),(yyvsp[-5].a),(yyvsp[-3].a),(yyvsp[-1].a)); }
-#line 1369 "tesina.tab.c" /* yacc.c:1646  */
+#line 1371 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
 #line 72 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newGet((yyvsp[-2].vr),1); }
-#line 1375 "tesina.tab.c" /* yacc.c:1646  */
+#line 1377 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
 #line 73 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newGet((yyvsp[-2].vr),2); }
-#line 1381 "tesina.tab.c" /* yacc.c:1646  */
+#line 1383 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
 #line 74 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newGet((yyvsp[-2].vr),3); }
-#line 1387 "tesina.tab.c" /* yacc.c:1646  */
+#line 1389 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
 #line 75 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newGet((yyvsp[-2].vr),4); }
-#line 1393 "tesina.tab.c" /* yacc.c:1646  */
+#line 1395 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
 #line 76 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newGet((yyvsp[-2].vr),5); }
-#line 1399 "tesina.tab.c" /* yacc.c:1646  */
+#line 1401 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
 #line 77 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newRegistro('O'); }
-#line 1405 "tesina.tab.c" /* yacc.c:1646  */
+#line 1407 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
 #line 78 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = addPaziente((yyvsp[-5].vr),(yyvsp[-1].a)); }
-#line 1411 "tesina.tab.c" /* yacc.c:1646  */
+#line 1413 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
 #line 79 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = getPaziente((yyvsp[-5].vr),(yyvsp[-1].a)); }
-#line 1417 "tesina.tab.c" /* yacc.c:1646  */
+#line 1419 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 80 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = numPositiviByFilter((yyvsp[-5].vr),(yyvsp[-1].a)); }
-#line 1423 "tesina.tab.c" /* yacc.c:1646  */
+#line 82 "tesina.y" /* yacc.c:1646  */
+    { (yyval.a) = newnum((yyvsp[0].d)); }
+#line 1425 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
 #line 83 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newnum((yyvsp[0].d)); }
-#line 1429 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newast('+', (yyvsp[-2].a),(yyvsp[0].a)); }
+#line 1431 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
 #line 84 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newast('+', (yyvsp[-2].a),(yyvsp[0].a)); }
-#line 1435 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newast('-', (yyvsp[-2].a),(yyvsp[0].a)); }
+#line 1437 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
 #line 85 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newast('-', (yyvsp[-2].a),(yyvsp[0].a)); }
-#line 1441 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newast('*', (yyvsp[-2].a),(yyvsp[0].a)); }
+#line 1443 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
 #line 86 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newast('*', (yyvsp[-2].a),(yyvsp[0].a)); }
-#line 1447 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newast('/', (yyvsp[-2].a),(yyvsp[0].a)); }
+#line 1449 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
 #line 87 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newast('/', (yyvsp[-2].a),(yyvsp[0].a)); }
-#line 1453 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newast('|', (yyvsp[0].a), NULL); }
+#line 1455 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
 #line 88 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newast('|', (yyvsp[0].a), NULL); }
-#line 1459 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = (yyvsp[-1].a); }
+#line 1461 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
 #line 89 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = (yyvsp[-1].a); }
-#line 1465 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newast('M', (yyvsp[0].a), NULL); }
+#line 1467 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
 #line 90 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newast('M', (yyvsp[0].a), NULL); }
-#line 1471 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newString((yyvsp[0].string)); }
+#line 1473 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
 #line 91 "tesina.y" /* yacc.c:1646  */
     { (yyval.a) = newString((yyvsp[0].string)); }
-#line 1477 "tesina.tab.c" /* yacc.c:1646  */
+#line 1479 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
 #line 92 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newString((yyvsp[0].string)); }
-#line 1483 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = newref((yyvsp[0].vr)); }
+#line 1485 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
 #line 93 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = newref((yyvsp[0].vr)); }
-#line 1489 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = numPazienti((yyvsp[-2].vr)); }
+#line 1491 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
 #line 94 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = numPazienti((yyvsp[-2].vr)); }
-#line 1495 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = numPositivi((yyvsp[-2].vr)); }
+#line 1497 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
 #line 95 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = numPositivi((yyvsp[-2].vr)); }
-#line 1501 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = numRicoverati((yyvsp[-2].vr)); }
+#line 1503 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
 #line 96 "tesina.y" /* yacc.c:1646  */
-    { (yyval.a) = numRicoverati((yyvsp[-2].vr)); }
-#line 1507 "tesina.tab.c" /* yacc.c:1646  */
+    { (yyval.a) = numPositiviByFilter((yyvsp[-5].vr),(yyvsp[-1].a)); }
+#line 1509 "tesina.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1511 "tesina.tab.c" /* yacc.c:1646  */
+#line 1513 "tesina.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

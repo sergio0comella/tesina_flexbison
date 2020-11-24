@@ -14,8 +14,8 @@ paz = PAZIENTE("CMLSRG97C28B780E","11Set1997","Positivo","Sicilia",1)
   paziente5 = PAZIENTE("DGV73M","11-08-2020","Negativo","Sicilia",1)
 
   
-  paziente4 = PAZIENTE("ffff","11-08-2020","Positivo","Lombardia",0) */
+  paziente4 = PAZIENTE("ffff","11-082020","Positivo","Lombardia",0) */
     r=REGISTRO()
     r.ADD(paziente3)
     r.ADD(paziente5)
-    r.POSIN(11-08-2020)
+    r.POSIN("11-08-2020")

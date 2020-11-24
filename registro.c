@@ -2,21 +2,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <regex.h>
 #include "tesina.h"
 #include "parameters.h"
 
 #define forEach(item, list) \
     for (item = list; item != NULL; item = item->pazienteSucc)
-
-int match(const char *string, const char *pattern) { 
-    regex_t re; 
-    if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) return 0; 
-    int status = regexec(&re, string, 0, NULL, 0); 
-    regfree(&re); 
-    if (status != 0) return 0; 
-    return 1; 
-} 
 
 int addPazienteToRegistro(struct ast *a)
 {
@@ -123,15 +113,11 @@ PazienteDet getPazienteByCf(struct ast *a){
 int getPositiviByFilter(struct ast *a){
 
     char *filter = eval(((struct numPositiviByFilter *)a)->filter).risS;
-    char filterWithApici[80];
-    strcpy(filterWithApici,"\"");
-    strcat(filterWithApici, filter);
-    strcat(filterWithApici, "\"");
 
     /* regex che matcha le date*/
     char *regexDate = REGEX_DATA;
     char *regexCountry = REGEX_COUNTRY;
-    
+
     int filterForDate = 0, filterForCountry = 0;
     if (match(filter, regexDate)){
         filterForDate = 1;
@@ -148,12 +134,12 @@ int getPositiviByFilter(struct ast *a){
     Registro *iter;
 
     forEach(iter, reg){
-      
-        if (filterForDate && (!strcasecmp(iter->paziente.dataTamp, filterWithApici)) && (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")))
+
+        if (filterForDate && (!strcasecmp(iter->paziente.dataTamp, filter)) && (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")))
         {
             counter += 1;
         }
-        else if (filterForCountry && (!strcasecmp(iter->paziente.regione, filterWithApici)) && (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")))
+        else if (filterForCountry && (!strcasecmp(iter->paziente.regione, filter)) && (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")))
         {
             counter +=1;
         }

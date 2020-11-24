@@ -50,7 +50,7 @@ EXP ([Ee][-+]?[0-9]+)
 "\""[a-zA-Z0-9" "\-]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                         strcpy(yylval.string,yytext); return STRING; }  /* String */
 
-^\d{1,2}\-\d{1,2}\-\d{4}$ {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
+"\""(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                                                            strcpy(yylval.string,yytext); return DATE; }  /* Date */
 
 

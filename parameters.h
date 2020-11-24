@@ -16,5 +16,5 @@
 #define NODE_NUMRIC 'C'
 #define NODE_PAZIENTE_FILTER 'F'
 
-#define REGEX_DATA "^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[[:digit:]][[:digit:]]$"
+#define REGEX_DATA "\"(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[[:digit:]][[:digit:]]\""
 #define REGEX_COUNTRY "[a-zA-Z]+"

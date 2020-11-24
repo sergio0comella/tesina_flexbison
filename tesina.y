@@ -77,23 +77,23 @@ stmt: exp
     | REGISTRO '('')'                                             { $$ = newRegistro('O'); }
     | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
     | USRVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
-    | USRVAR '.' POSIN '(' exp ')'                                { $$ = numPositiviByFilter($1,$5); }
 ;
 
-exp: NUMBER                     { $$ = newnum($1); }
-    | exp '+' exp               { $$ = newast('+', $1,$3); }
-    | exp '-' exp               { $$ = newast('-', $1,$3); }
-    | exp '*' exp               { $$ = newast('*', $1,$3); }
-    | exp '/' exp               { $$ = newast('/', $1,$3); }
-    | '|' exp                   { $$ = newast('|', $2, NULL); }
-    | '(' exp ')'               { $$ = $2; }
-    | '-' exp %prec UMINUS      { $$ = newast('M', $2, NULL); }
-    | STRING                    { $$ = newString($1); }
-    | DATE                      { $$ = newString($1); }
-    | USRVAR                    { $$ = newref($1); }
-    | USRVAR '.' NPAZ           { $$ = numPazienti($1); }
-    | USRVAR '.' NPOS           { $$ = numPositivi($1); }
-    | USRVAR '.' NRIC           { $$ = numRicoverati($1); }
+exp: NUMBER                                                       { $$ = newnum($1); }
+    | exp '+' exp                                                 { $$ = newast('+', $1,$3); }
+    | exp '-' exp                                                 { $$ = newast('-', $1,$3); }
+    | exp '*' exp                                                 { $$ = newast('*', $1,$3); }
+    | exp '/' exp                                                 { $$ = newast('/', $1,$3); }
+    | '|' exp                                                     { $$ = newast('|', $2, NULL); }
+    | '(' exp ')'                                                 { $$ = $2; }
+    | '-' exp %prec UMINUS                                        { $$ = newast('M', $2, NULL); }
+    | STRING                                                      { $$ = newString($1); }
+    | DATE                                                        { $$ = newString($1); }
+    | USRVAR                                                      { $$ = newref($1); }
+    | USRVAR '.' NPAZ                                             { $$ = numPazienti($1); }
+    | USRVAR '.' NPOS                                             { $$ = numPositivi($1); }
+    | USRVAR '.' NRIC                                             { $$ = numRicoverati($1); }
+    | USRVAR '.' POSIN '(' exp ')'                                { $$ = numPositiviByFilter($1,$5); }
 ;
 
 %%
