@@ -64,10 +64,11 @@ extern int yydebug;
     NPAZ = 274,
     NPOS = 275,
     NRIC = 276,
-    USRVAR = 277,
-    EOL = 278,
-    CMP = 279,
-    UMINUS = 280
+    POSIN = 277,
+    USRVAR = 278,
+    EOL = 279,
+    CMP = 280,
+    UMINUS = 281
   };
 #endif
 
@@ -84,7 +85,7 @@ union YYSTYPE
     struct var *vr;
     int cmp;
 
-#line 88 "tesina.tab.h" /* yacc.c:1909  */
+#line 89 "tesina.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

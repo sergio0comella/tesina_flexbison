@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include "parameters.h"
 #include "tesina.h"
 
 struct ast *newast(int nodetype, struct ast *l, struct ast *r)
@@ -68,7 +69,7 @@ struct ast *newref(struct var *vr)
         exit(0);
     }
 
-    a->nodetype = 'R';
+    a->nodetype = NODE_REFERENCE;
     a->var = vr;
 
     return (struct ast *)a;
@@ -89,7 +90,7 @@ struct ast *newGet(struct var *vr, int c)
       yyerror("Paziente non istanziato"); 
     }
 
-    a->nodetype = 'G';
+    a->nodetype = NODE_GET;
     a->getVal = NULL;
     char *si = "\"Si\"";
     char *no = "\"No\"";
@@ -130,7 +131,7 @@ struct ast *newasgn(struct var *vr, struct ast *v)
         exit(0);
     }
 
-    a->nodetype = '=';
+    a->nodetype = NODE_EQUAL;
     a->var = vr;
     a->v = v;
 
@@ -186,9 +187,9 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp, stru
     }
 
 
-    /* paziente3 = PAZIENTE("DGVmrC97P11G273M","11Set1997","Positivo","Sicilia",1) */
+    /* paziente3 = PAZIENTE("DGVmrC97P11G273M","11/08/1997","Positivo","Sicilia",1) */
     /* paziente5 = PAZIENTE("DGV73M","11Set1997","Positivo","Sicilia",1) */
-    /* paziente4 = PAZIENTE("fff","11Marzo1997","Positivo","Lombardia",1) */
+    /* */
     /* paziente4 = PAZIENTE("ffff","11Marzo1997","Negativo","Lombardia",0) */
     
     a->nodetype = nodetype;
@@ -234,7 +235,7 @@ struct ast *addPaziente(struct var* var, struct ast* paziente)
       exit(0);  
     }
 
-    a->nodetype = 'E';
+    a->nodetype = NODE_ADD_PAZIENTE;
     a->varReg = var;
     a->paziente = paziente;
 
@@ -256,7 +257,7 @@ struct ast *getPaziente(struct var* var, struct ast* codFis) {
       yyerror("Registro non istanziato");  
     }
 
-    a->nodetype = 'T';
+    a->nodetype = NODE_GETPAZ;
     a->varReg = var;
     a->key = codFis;
 
@@ -278,7 +279,7 @@ struct ast *numPazienti(struct var* var) {
       yyerror("Registro non istanziato");  
     }
 
-    a->nodetype = 'Z';
+    a->nodetype = NODE_NUMPAZ;
     a->varReg = var;
 
     return a;
@@ -300,7 +301,7 @@ struct ast *numPositivi(struct var* var) {
       yyerror("Registro non istanziato");  
     }
 
-    a->nodetype = 'B';
+    a->nodetype = NODE_NUMPOS;
     a->varReg = var;
 
     return a;
@@ -321,12 +322,32 @@ struct ast *numRicoverati(struct var* var) {
       yyerror("Registro non istanziato");  
     }
 
-    a->nodetype = 'C';
+    a->nodetype = NODE_NUMRIC;
     a->varReg = var;
 
     return a;
 
 }
 
+struct ast *numPositiviByFilter(struct var *var, struct ast* filter) {
 
+    struct numPositiviByFilter *a = malloc(sizeof(struct numPositiviByFilter));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");  
+    }
+
+    a->nodetype = NODE_PAZIENTE_FILTER;
+    a->varReg = var;
+    a->filter = filter;
+
+    return a;
+
+}
 

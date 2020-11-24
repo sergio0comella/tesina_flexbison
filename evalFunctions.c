@@ -61,6 +61,10 @@ struct result eval(struct ast *a)
     case NODE_GETPAZ:
         risultato.risP = getPazienteByCf(a);
         break;
+    
+    case NODE_PAZIENTE_FILTER:
+        risultato.risD = getPositiviByFilter(a);
+        break;
 
     /* Ottenere il numero di pazienti di un registro */
     case NODE_NUMPAZ:

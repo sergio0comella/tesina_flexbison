@@ -131,6 +131,14 @@ struct numRicoverati {
     struct var *varReg; 
 };
 
+/* Struttura per ottenre il numero di positivi in una data/regione di un registro */
+struct numPositiviByFilter {
+    int nodetype;
+    struct var *varReg; 
+    struct ast *filter;
+};
+
+
 /*costruzione AST*/
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);                                                                           // D
@@ -154,6 +162,8 @@ struct ast *numPazienti(struct var* var);
 struct ast *numPositivi(struct var* var);
 //C
 struct ast *numRicoverati(struct var* var);
+//F
+struct ast *numPositiviByFilter(struct var *var, struct ast *filter);
 
 /*cancellazione nodi*/
 void treefree(struct ast *);
@@ -169,4 +179,5 @@ int addPazienteToRegistro(struct ast *a);
 int getTotalePositivi(struct ast *a);
 int getTotaleRicoverati(struct ast *a);
 int getPazientiTotali(struct ast *a);
+int getPositiviByFilter(struct ast *a);
 PazienteDet getPazienteByCf(struct ast *a);

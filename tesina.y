@@ -24,7 +24,7 @@
 %token PAZIENTE 
 %token CF ESITOTAMP DATATAMP REGIONE ISRIC
 %token REGISTRO
-%token ADD GET NPAZ NPOS NRIC
+%token ADD GET NPAZ NPOS NRIC POSIN
 
 %token <vr> USRVAR
 
@@ -74,9 +74,10 @@ stmt: exp
     | USRVAR '.' DATATAMP                                         { $$ = newGet($1,3); }
     | USRVAR '.' REGIONE                                          { $$ = newGet($1,4); }
     | USRVAR '.' ISRIC                                            { $$ = newGet($1,5); }
-    | REGISTRO'('')'                                              { $$ = newRegistro('O'); }
+    | REGISTRO '('')'                                             { $$ = newRegistro('O'); }
     | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
     | USRVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
+    | USRVAR '.' POSIN '(' exp ')'                                { $$ = numPositiviByFilter($1,$5); }
 ;
 
 exp: NUMBER                     { $$ = newnum($1); }

@@ -25,6 +25,7 @@ EXP ([Ee][-+]?[0-9]+)
 "NUMPAZ"   { return NPAZ; }
 "NUMPOS"   { return NPOS; }
 "NUMRIC"   { return NRIC; }
+"POSIN"    { return POSIN; }
 
 ">"     { yylval.cmp = 1; return CMP; }
 "<"     { yylval.cmp = 2; return CMP; }
@@ -49,7 +50,7 @@ EXP ([Ee][-+]?[0-9]+)
 "\""[a-zA-Z0-9" "\-]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                         strcpy(yylval.string,yytext); return STRING; }  /* String */
 
-([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4} {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
+^\d{1,2}\-\d{1,2}\-\d{4}$ {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                                                            strcpy(yylval.string,yytext); return DATE; }  /* Date */
 
 
