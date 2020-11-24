@@ -2,11 +2,21 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <regex.h>
 #include "tesina.h"
 #include "parameters.h"
 
 #define forEach(item, list) \
     for (item = list; item != NULL; item = item->pazienteSucc)
+
+int match(const char *string, const char *pattern) { 
+    regex_t re; 
+    if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) return 0; 
+    int status = regexec(&re, string, 0, NULL, 0); 
+    regfree(&re); 
+    if (status != 0) return 0; 
+    return 1; 
+} 
 
 int addPazienteToRegistro(struct ast *a)
 {
@@ -25,7 +35,8 @@ int addPazienteToRegistro(struct ast *a)
         return 1;
     }
 
-    /* Scorro la lista di pazienti per arrivare al primo posto disponibile */
+    /* Scorro la lista di pazienti per arrivare al primo posto disponibile e
+     controllo che il paziente non sia già stato inserito nel registro */
     struct registro *lastPaziente = &((struct addPaziente *)a)->varReg->registro;
     while (lastPaziente->pazienteSucc != NULL) {
        if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
@@ -69,25 +80,8 @@ int getTotalePositivi(struct ast *a){
 //Restituisce il totale dei ricoverati in un dato registro
 int getTotaleRicoverati(struct ast *a) {
     int counter = 0;
-/*
-    struct registro *reg = &((struct numPazienti *)a)->varReg->registro;
 
-    if (reg->paziente.cf == 0){
-        return 0;
-    }
-
-    while (reg->pazienteSucc != NULL) {
-        if (reg->paziente.isRicoverato == 1){
-            counter += 1;
-        }
-        reg = reg->pazienteSucc;
-    }
-
-    if (reg->paziente.isRicoverato == 1){
-        counter += 1;
-    }
-
-*/ //replaced with foreach
+    //forEach che itera la lista dei pazienti
     Registro *reg = &((struct numPazienti *)a)->varReg->registro;
     Registro *iter;
     forEach(iter, reg)
@@ -124,4 +118,49 @@ PazienteDet getPazienteByCf(struct ast *a){
         }
     }
     
+}
+
+int getPositiviByFilter(struct ast *a){
+
+    char *filter = eval(((struct numPositiviByFilter *)a)->filter).risS;
+    char filterWithApici[80];
+    strcpy(filterWithApici,"\"");
+    strcat(filterWithApici, filter);
+    strcat(filterWithApici, "\"");
+
+    /* regex che matcha le date*/
+    char *regexDate = REGEX_DATA;
+    char *regexCountry = REGEX_COUNTRY;
+    
+    int filterForDate = 0, filterForCountry = 0;
+    if (match(filter, regexDate)){
+        filterForDate = 1;
+    }
+    else if(match(filter, regexCountry)){
+        filterForCountry = 1;
+    }else{
+        printf("Inserimento errato");
+        return 0;
+    }
+
+    int counter = 0;
+    Registro *reg = &((struct numPositiviByFilter *)a)->varReg->registro;
+    Registro *iter;
+
+    forEach(iter, reg){
+      
+        if (filterForDate && (!strcasecmp(iter->paziente.dataTamp, filterWithApici)) && (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")))
+        {
+            counter += 1;
+        }
+        else if (filterForCountry && (!strcasecmp(iter->paziente.regione, filterWithApici)) && (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")))
+        {
+            counter +=1;
+        }
+    }
+    
+    if(counter == 0){
+        printf("Nessun paziente trovato con i criteri ricercati.");
+    }
+    return counter;
 }

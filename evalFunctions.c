@@ -31,6 +31,15 @@ struct result eval(struct ast *a)
 
     /* Paziente */
     case NODE_PAZIENTE:
+        /* Controllo per inserire la data in formata valido
+         Qualcosa non va, ripete l'eval che stampa l'errore più volte.
+          Inoltre non accetta il formato corretto perchè ha le virgolette
+        char *regexDate = REGEX_DATA;
+        if (!match(pazTemp.dataTamp, regexDate)){
+            yyerror("Data in formato non valido. Formato valido: dd-mm-yyyy");
+            return 0; //TODO mantenere programma in esecuzione e liberare il nodo
+        }
+        */
         risultato.risP.cf = eval(((struct paziente *)a)->cf).risS;
         risultato.risP.dataTamp = eval(((struct paziente *)a)->dataTamp).risS;
         risultato.risP.esitoTamp = eval(((struct paziente *)a)->esitoTamp).risS;
@@ -60,6 +69,10 @@ struct result eval(struct ast *a)
     /* Estrazione di un paziente dal registro dato il codice fiscale */
     case NODE_GETPAZ:
         risultato.risP = getPazienteByCf(a);
+        break;
+    
+    case NODE_PAZIENTE_FILTER:
+        risultato.risD = getPositiviByFilter(a);
         break;
 
     /* Ottenere il numero di pazienti di un registro */

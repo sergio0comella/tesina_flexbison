@@ -10,3 +10,12 @@ TO DO:
 
 paziente3 = PAZIENTE("CMLSRG","11Set1997","Positivo","Sicilia",0)
 paz = PAZIENTE("CMLSRG97C28B780E","11Set1997","Positivo","Sicilia",1)
+  paziente3 = PAZIENTE("DGVmrC97P11G273M","11-08-2020","Positivo","Sicilia",1) 
+  paziente5 = PAZIENTE("DGV73M","11-08-2020","Negativo","Sicilia",1)
+
+  
+  paziente4 = PAZIENTE("ffff","11-08-2020","Positivo","Lombardia",0) */
+    r=REGISTRO()
+    r.ADD(paziente3)
+    r.ADD(paziente5)
+    r.POSIN(11-08-2020)
