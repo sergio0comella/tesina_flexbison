@@ -25,6 +25,7 @@
 %token CF ESITOTAMP DATATAMP REGIONE ISRIC
 %token REGISTRO
 %token ADD GET NPAZ NPOS NRIC POSIN
+%token STAMPA
 
 %token <vr> USRVAR
 
@@ -32,6 +33,7 @@
 
 /* Precedenza degli operatori */
 
+%nonassoc ':'
 %right '='
 %nonassoc <cmp> CMP
 %left '+' '-'
@@ -77,6 +79,7 @@ stmt: exp
     | REGISTRO '('')'                                             { $$ = newRegistro('O'); }
     | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
     | USRVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
+    | STAMPA ':' stmt                                             { $$ = newPrint($3); }
 ;
 
 exp: NUMBER                                                       { $$ = newnum($1); }

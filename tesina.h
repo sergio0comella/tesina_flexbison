@@ -25,6 +25,7 @@ struct result {
     char *risS;
     struct pazienteDet risP;
     struct registro risO;
+    int flagPrint;
 };
 
 
@@ -138,6 +139,11 @@ struct numPositiviByFilter {
     struct ast *filter;
 };
 
+struct print {
+    int nodetype;
+    struct ast *val;
+};
+
 
 /*costruzione AST*/
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
@@ -164,6 +170,8 @@ struct ast *numPositivi(struct var* var);
 struct ast *numRicoverati(struct var* var);
 //F
 struct ast *numPositiviByFilter(struct var *var, struct ast *filter);
+//H
+struct ast *newPrint(struct ast *a);
 
 /*cancellazione nodi*/
 void treefree(struct ast *);
@@ -171,7 +179,7 @@ void treefree(struct ast *);
 /* Analisi e manipolazione albero sintattico che si è costruito */
 void processTree(int,struct ast *);
 struct result eval(struct ast *a);
-double evalExpr(struct ast *a);
+struct result evalExpr(struct ast *a);
 struct result evalAsgn(struct ast *a);
 
 /* Functions Registro*/
@@ -180,4 +188,5 @@ int getTotalePositivi(struct ast *a);
 int getTotaleRicoverati(struct ast *a);
 int getPazientiTotali(struct ast *a);
 int getPositiviByFilter(struct ast *a);
+int findType(struct result risLeft);
 PazienteDet getPazienteByCf(struct ast *a);

@@ -54,6 +54,7 @@ struct var *lookup(char *nome)
             variabile->paziente.isRicoverato = 0;
             variabile->registro.idReg = 0;
             variabile->registro.indice = 0;
+            variabile->registro.pazienteSucc = NULL;
 
             return variabile;
         }
@@ -73,8 +74,8 @@ void processTree(int print, struct ast *a)
 {
 
     struct result risultato = eval(a);
-
-    if (print == 'P')
+    
+    if (print == 'P' && risultato.flagPrint == 0)
     {
         if (sizeof(risultato.risS) > 0 && risultato.risS != NULL) {
             printf("\033[0;33m");
@@ -91,7 +92,7 @@ void processTree(int print, struct ast *a)
             printf("|Regione: %s\n", risultato.risP.regione);
             printf("|Ricoverato: %s\n", risultato.risP.isRicoverato == 1 ? "Sì" : "No");
             printf("-------------------------");
-            printf("------------\n");
+            printf("------------\n\n");
             printf("\033[0m");
         } else if(risultato.risO.idReg != NULL) {
             printf("\033[0;32m");
@@ -174,6 +175,28 @@ int match(const char *string, const char *pattern)
     if (status != 0)
         return 0;
     return 1;
+}
+
+int findType(struct result risLeft) {
+    
+    int left;
+
+    if (risLeft.risP.cf == NULL && risLeft.risD == 0 && risLeft.risO.idReg == 0){
+       left = 2; // è una stringa
+    }
+
+   if (risLeft.risS == NULL && risLeft.risD == 0 && risLeft.risO.idReg == 0){
+       left = 3; // è un paziente
+    }
+
+   if (risLeft.risD != 0){
+       left = 1; // è un double
+    }
+
+   if (risLeft.risO.idReg != 0){
+       left = 4; // è un registro
+    }
+   return left;
 }
 
 int main(int argc, char const *argv[])

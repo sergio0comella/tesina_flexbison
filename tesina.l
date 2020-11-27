@@ -19,13 +19,15 @@ EXP ([Ee][-+]?[0-9]+)
 "getRegione"      { return REGIONE; }
 "isRicoverato"    { return ISRIC; }     /* Paziente e rispettivi "metodi" */
 
+"STAMPA" { return STAMPA; }
+
 "REGISTRO" { return REGISTRO; } 
 "ADD"      { return ADD; }
 "GET"      { return GET; }
 "NUMPAZ"   { return NPAZ; }
 "NUMPOS"   { return NPOS; }
 "NUMRIC"   { return NRIC; }
-"POSIN"    { return POSIN; }
+"POSIN"    { return POSIN; }            /* Registro e rispettivi "metodi" */
 
 ">"     { yylval.cmp = 1; return CMP; }
 "<"     { yylval.cmp = 2; return CMP; }

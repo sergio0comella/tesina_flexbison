@@ -16,9 +16,35 @@ struct result eval(struct ast *a)
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
     risultato.risO.idReg = 0;
+    risultato.flagPrint = 0;
     
     switch (a->nodetype)
     {
+
+    
+    case NODE_PRINT:
+    {
+        struct result print;
+        print = eval(((struct print *)a)->val);
+
+        if(print.risS != NULL) {
+            printf("> %s\n", print.risS);
+            risultato.flagPrint = 1;
+            break;
+        }
+
+        if(print.risD != 0.0) {
+            printf("> %4.4g\n\n", print.risD);
+            risultato.flagPrint = 1;
+            break;
+        }
+
+        printf("Argomento da stampare non valido\n\n");
+        risultato.flagPrint = 1;
+        break;
+    }
+    
+
     /* Numeri (double) */
     case NODE_DOUBLE:
         risultato.risD = ((struct numval *)a)->number;
@@ -66,9 +92,17 @@ struct result eval(struct ast *a)
 
     /* Estrazione di un paziente dal registro dato il codice fiscale */
     case NODE_GETPAZ:
-        risultato.risP = getPazienteByCf(a);
+    {
+        if(getPazienteByCf(a).cf == NULL) {
+            risultato.risS = "Paziente non trovato";
+        } else {
+            risultato.risP = getPazienteByCf(a);
+        }
         break;
-    
+        
+    } 
+
+    /* Ottenre il numero di pazienti positivi per regione o per data */
     case NODE_PAZIENTE_FILTER:
         risultato.risD = getPositiviByFilter(a);
         break;
@@ -162,27 +196,22 @@ struct result eval(struct ast *a)
     case '/':
     case '|':
     case 'M':
-        risultato.risD = evalExpr(a);
-        break;
-
-    /* Operazioni di comparazione */
     case '1':
     case '2':
     case '3':
+    case '4':
     case '5':
     case '6':
-        risultato.risD = evalExpr(a);
-        break;
-    /* Confronto tra due stringhe */
-    case '4':
-        if ((eval(a->l).risS) != NULL)
         {
-            risultato.risD = (int)(strcmp(eval(a->l).risS, eval(a->r).risS) == 0);
+        struct result ris;
+        ris = evalExpr(a);
+        if(findType(ris) == 1) {
+            risultato.risD = ris.risD;
             break;
         }
-        risultato.risD = evalExpr(a);
+        risultato.risS = ris.risS;
         break;
-
+        }
     case NODE_SEQOP:
         eval(a->l);
         eval(a->r);
@@ -191,7 +220,6 @@ struct result eval(struct ast *a)
     default:
         printf("Errore interno di valutazione - nodetype: %d", a->nodetype);
     }
-
     return risultato;
 }
 
@@ -240,17 +268,214 @@ struct result evalAsgn(struct ast *a)
 }
 
 /* Funzione che valuta espressioni numeriche */
-double evalExpr(struct ast *a)
+struct result evalExpr(struct ast *a)
 {
 
-    double v;
+    struct result risExpr;
+    risExpr.risS = NULL;
+    risExpr.risD = 0;
+    risExpr.risP.cf = NULL;
+    risExpr.risO.idReg = 0;
+    risExpr.flagPrint = 0;
 
-    switch (a->nodetype)
-    {
-    /* Numeri (double) */
+    struct result risLeft;
+    struct result risRight;
+
+    /* Numeri (double)
     case 'D':
         v = ((struct numval *)a)->number;
+        printf("v inside evalExpr: %f", v);
         break;
+    */
+
+
+   switch (a->nodetype)
+   {
+   case '+':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = risRight.risD + risLeft.risD;
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risS = strcat(risLeft.risS,risRight.risS);
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+            
+        }*/
+        risExpr.risD = 0;
+        break;
+   
+   case '-':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = risRight.risD - risLeft.risD;
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = strlen(risLeft.risS) - strlen(risRight.risS);
+            break;
+        }
+        risExpr.risD = 0;
+        break;
+
+    case '*':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = risRight.risD * risLeft.risD;
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = strlen(risLeft.risS) * strlen(risRight.risS);
+            break;
+        }
+        risExpr.risD = 0;
+        break;
+
+
+    case '/':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = risRight.risD / risLeft.risD;
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = strlen(risLeft.risS) / strlen(risRight.risS);
+            break;
+        }
+        risExpr.risD = 0;
+        break;
+    
+    case '|':
+        risLeft = eval(a->l);
+        if (findType(risLeft) == 1) {
+            if (risLeft.risD < 0) {
+                risExpr.risD = -risLeft.risD;
+            } else {
+                risExpr.risD = risLeft.risD;
+            }
+            break;
+        }
+        risExpr.risD = 0;
+        break;
+    
+    case '1':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD > risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)(strlen(risLeft.risS) > strlen(risRight.risS));
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+    
+    case '2':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD < risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)(strlen(risLeft.risS) < strlen(risRight.risS));
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+    
+    case '3':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD != risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)strcmp(risLeft.risS,risRight.risS);
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+    case '4':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD == risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)(!strcmp(risLeft.risS,risRight.risS));
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+    case '5':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD >= risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)(strlen(risLeft.risS) >= strlen(risRight.risS));
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+    case '6':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD <= risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)(strlen(risLeft.risS) <= strlen(risRight.risS));
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+
+   default:
+       break;
+   }
+   
+   return risExpr;
+
+}
+
+
+
+    /*
+     switch (a->nodetype)
+    {
 
     case '+':
         v = eval(a->l).risD + eval(a->r).risD;
@@ -296,4 +521,4 @@ double evalExpr(struct ast *a)
     }
 
     return v;
-}
+    */

@@ -10,7 +10,6 @@
 
 int addPazienteToRegistro(struct ast *a)
 {
-
     /* Estraggo il paziente */
     struct pazienteDet pazTemp = eval(((struct addPaziente *)a)->paziente).risP;
 
@@ -29,10 +28,12 @@ int addPazienteToRegistro(struct ast *a)
      controllo che il paziente non sia già stato inserito nel registro */
     struct registro *lastPaziente = &((struct addPaziente *)a)->varReg->registro;
     while (lastPaziente->pazienteSucc != NULL) {
-       if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+        if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
             return 0;       
        }
+
         lastPaziente = lastPaziente->pazienteSucc;
+        printf("lastPaziente->paziente.cf: %s\n", lastPaziente->paziente.cf);
     }
     /*controllo anche l'ultimo elemento che viene escluso dal while*/
     if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
@@ -45,6 +46,7 @@ int addPazienteToRegistro(struct ast *a)
     rTemp->nodetype = NODE_REGISTRO;
     rTemp->paziente = pazTemp;
     rTemp->indice = lastPaziente->indice + 1;
+    rTemp->pazienteSucc = NULL;
     lastPaziente->pazienteSucc = rTemp;
 
     /*risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;*/
@@ -98,6 +100,10 @@ int getPazientiTotali(struct ast *a){
 
 
 PazienteDet getPazienteByCf(struct ast *a){
+    
+    PazienteDet ris;
+    ris.cf = NULL;
+
     char *cf = eval(((struct getPaziente *)a)->key).risS;
 
     Registro *reg = &((struct getPaziente *)a)->varReg->registro;
@@ -107,7 +113,7 @@ PazienteDet getPazienteByCf(struct ast *a){
             return iter->paziente;
         }
     }
-    
+    return ris;
 }
 
 int getPositiviByFilter(struct ast *a){
