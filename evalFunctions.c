@@ -21,7 +21,7 @@ struct result eval(struct ast *a)
     switch (a->nodetype)
     {
 
-    
+    /* Stampare un valore */
     case NODE_PRINT:
     {
         struct result print;
@@ -121,6 +121,92 @@ struct result eval(struct ast *a)
     case NODE_NUMRIC:
         risultato.risD = getTotaleRicoverati(a);
         break;
+
+
+
+
+
+
+    case NODE_IMPORT:{
+        
+        char *fileUrl = eval(((struct importDet *)a)->fileUrl).risS;
+        Registro reg = ((struct importDet *)a)->varReg->registro;
+
+        Registro *regTemp = &reg;
+        /**
+         * La stringa del filename arriva con gli apici. 
+         * Pulisco la stringa dal primo e dall'ultimo carattere.
+         */
+       	int i , len = strlen(fileUrl); 
+        for(i=1;i<len-1;i++){ 
+            fileUrl[i-1] = fileUrl[i]; 
+        } 
+        fileUrl[i-1] = '\0'; 
+
+        int number;
+        
+        FILE *f;
+        f = fopen(fileUrl, "r");
+
+        if(!f) {
+            yyerror("Problema lettura file");
+            exit(0);
+        }
+
+        struct pazienteDet records[1000];
+        char line[1024];
+
+        while (fgets(line, 1024, f))
+        {
+            char* tmp = strdup(line);
+            const char *tok;
+            int field = 1;
+            for (tok = strtok(tmp, ";"); tok && *tok; tok = strtok(NULL, ";\n")) 
+            {
+                switch (field)
+                {
+                    case 1:
+                        records->cf = tok;
+                        break; 
+                    case 2:
+                        records->dataTamp = tok;
+                        break;
+                    case 3:
+                        records->esitoTamp = tok;
+                        break;
+                    case 4: 
+                        records->regione = tok;
+                        break;
+                    case 5: 
+                        records->isRicoverato = atoi(tok);
+                        break;
+                    default:
+                        yyerror("Errore switch case records-tok");
+                }
+
+                //printf("TOK[%d]=%s\n", field, tok);
+                field++;
+                if(field > 5) {          
+                    printf("recors[0].cf: %s\n", records[0].cf);
+                    printf("recors[0].dataTamp: %s\n", records[0].dataTamp);
+                    printf("recors[0].esitoTamp: %s\n", records[0].esitoTamp);
+                    printf("recors[0].regione: %s\n", records[0].regione);
+                    printf("recors[0].isRic: %d\n\n", records[0].isRicoverato);
+                    int res = importToRegistro(records[0],regTemp);
+                        if(res == 0) {
+                            printf("Problema aggiunta paziente\n");
+                        }
+                    field = 1;
+                }
+            }
+
+            free(tmp);
+        }
+
+        printf("");
+        risultato.risS = "Dati importati correttamente";
+        break;
+    }
 
     /* Assegnamento */
     case NODE_EQUAL:
@@ -470,55 +556,3 @@ struct result evalExpr(struct ast *a)
    return risExpr;
 
 }
-
-
-
-    /*
-     switch (a->nodetype)
-    {
-
-    case '+':
-        v = eval(a->l).risD + eval(a->r).risD;
-        break;
-    case '-':
-        v = eval(a->l).risD - eval(a->r).risD;
-        break;
-    case '*':
-        v = eval(a->l).risD * eval(a->r).risD;
-        break;
-    case '/':
-        v = eval(a->l).risD / eval(a->r).risD;
-        break;
-    case '|':
-        v = eval(a->l).risD;
-        if (v < 0)
-            v = -v;
-        break;
-    case 'M':
-        v = -eval(a->l).risD;
-        break;
-
-    case '1':
-        v = (int)(eval(a->l).risD > eval(a->r).risD);
-        break;
-    case '2':
-        v = (int)(eval(a->l).risD < eval(a->r).risD);
-        break;
-    case '3':
-        v = (int)(eval(a->l).risD != eval(a->r).risD);
-        break;
-    case '4':
-        v = (int)(eval(a->l).risD == eval(a->r).risD);
-        break;
-    case '5':
-        v = (int)(eval(a->l).risD >= eval(a->r).risD);
-        break;
-    case '6':
-        v = (int)(eval(a->l).risD <= eval(a->r).risD);
-        break;
-    default:
-        break;
-    }
-
-    return v;
-    */

@@ -367,3 +367,26 @@ struct ast *newPrint(struct ast *val) {
     return a;
 }
 
+struct ast *import(struct var *var, struct ast *fileUrl) {
+
+    
+    struct importDet *a = malloc(sizeof(struct importDet));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");  
+    }
+
+    a->nodetype = 'J';
+    a->varReg = var;
+    a->fileUrl = fileUrl;
+
+    
+    return a;
+}
+

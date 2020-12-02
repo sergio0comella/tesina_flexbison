@@ -27,7 +27,8 @@ EXP ([Ee][-+]?[0-9]+)
 "NUMPAZ"   { return NPAZ; }
 "NUMPOS"   { return NPOS; }
 "NUMRIC"   { return NRIC; }
-"POSIN"    { return POSIN; }            /* Registro e rispettivi "metodi" */
+"POSIN"    { return POSIN; }
+"IMPORT"   { return IMPORT;}            /* Registro e rispettivi "metodi" */
 
 ">"     { yylval.cmp = 1; return CMP; }
 "<"     { yylval.cmp = 2; return CMP; }
@@ -49,7 +50,7 @@ EXP ([Ee][-+]?[0-9]+)
 "." |
 ")" { return yytext[0]; }  /* Operatori aritmetici */
 
-"\""[a-zA-Z0-9" "\-]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
+"\""[a-zA-Z0-9" "\-"."]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                         strcpy(yylval.string,yytext); return STRING; }  /* String */
 
 "\""(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 

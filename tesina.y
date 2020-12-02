@@ -25,6 +25,7 @@
 %token CF ESITOTAMP DATATAMP REGIONE ISRIC
 %token REGISTRO
 %token ADD GET NPAZ NPOS NRIC POSIN
+%token IMPORT
 %token STAMPA
 
 %token <vr> USRVAR
@@ -79,6 +80,7 @@ stmt: exp
     | REGISTRO '('')'                                             { $$ = newRegistro('O'); }
     | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
     | USRVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
+    | USRVAR '.' IMPORT '(' exp ')'                               { $$ = import($1,$5); }
     | STAMPA ':' stmt                                             { $$ = newPrint($3); }
 ;
 

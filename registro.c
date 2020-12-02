@@ -8,6 +8,57 @@
 #define forEach(item, list) \
     for (item = list; item != NULL; item = item->pazienteSucc)
 
+
+
+int importToRegistro(struct pazienteDet pazTemp, struct registro registro ) {
+    
+    /* Caso in cui il registro sia vuoto */
+    if (registro.paziente.cf == NULL) {
+            registro.occupato = 1;
+            registro.paziente = pazTemp;
+            printf("\nENTRATO\n");
+            return 1;
+    }
+
+    /* Scorro la lista di pazienti per arrivare al primo posto disponibile e
+     controllo che il paziente non sia già stato inserito nel registro */
+    struct registro *lastPaziente = &registro;
+    while (lastPaziente->pazienteSucc != NULL) {
+        /*if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+            return 0;       
+       }*/
+
+        lastPaziente = lastPaziente->pazienteSucc;
+        printf("lastPaziente->paziente.cf: %s\n", lastPaziente->paziente.cf);
+    }
+
+    /*controllo anche l'ultimo elemento che viene escluso dal while*/
+    /*if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+        printf("ENTRATO ULTIMO STRCASE");
+        return 0;
+    }*/
+
+    /* Inseriamo il paziente */
+    struct registro *rTemp = malloc(sizeof(struct registro));
+    rTemp->idReg = registro.idReg;
+    rTemp->nodetype = NODE_REGISTRO;
+    rTemp->paziente = pazTemp;
+    rTemp->indice = lastPaziente->indice + 1;
+    rTemp->pazienteSucc = NULL;
+    lastPaziente->pazienteSucc = rTemp;
+
+    /*risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;*/
+    return 1;   
+}
+
+
+
+
+
+
+
+
+
 int addPazienteToRegistro(struct ast *a)
 {
     /* Estraggo il paziente */
@@ -21,6 +72,7 @@ int addPazienteToRegistro(struct ast *a)
     /* Caso in cui il registro sia vuoto */
     if (((struct addPaziente *)a)->varReg->registro.paziente.cf == NULL) {
         ((struct addPaziente *)a)->varReg->registro.paziente = pazTemp;
+        ((struct addPaziente *)a)->varReg->registro.occupato = 1;
         return 1;
     }
 
@@ -33,7 +85,7 @@ int addPazienteToRegistro(struct ast *a)
        }
 
         lastPaziente = lastPaziente->pazienteSucc;
-        printf("lastPaziente->paziente.cf: %s\n", lastPaziente->paziente.cf);
+        //printf("lastPaziente->paziente.cf: %s\n", lastPaziente->paziente.cf);
     }
     /*controllo anche l'ultimo elemento che viene escluso dal while*/
     if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
@@ -60,6 +112,14 @@ int getTotalePositivi(struct ast *a){
 
     Registro *reg = &((struct numPazienti *)a)->varReg->registro;
     Registro *iter;
+    /**
+     * Se il primo paziente del registro ha il 
+     * flag occupato == 0 allora il registro sarà vuoto.
+     */
+    if (reg->occupato == 0)
+    {
+        return counter;
+    }
     forEach(iter, reg){
         if (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")){
             counter += 1;
@@ -76,6 +136,15 @@ int getTotaleRicoverati(struct ast *a) {
     //forEach che itera la lista dei pazienti
     Registro *reg = &((struct numPazienti *)a)->varReg->registro;
     Registro *iter;
+
+    /**
+     * Se il primo paziente del registro ha il 
+     * flag occupato == 0 allora il registro sarà vuoto.
+     */
+    if (reg->occupato == 0)
+    {
+        return counter;
+    }
     forEach(iter, reg)
     {
         if (iter->paziente.isRicoverato == 1){
@@ -92,6 +161,14 @@ int getPazientiTotali(struct ast *a){
 
     Registro *reg = &((struct numPazienti *)a)->varReg->registro;
     Registro *iter;
+    /**
+     * Se il primo paziente del registro ha il 
+     * flag occupato == 0 allora il registro sarà vuoto.
+     */
+    if (reg->occupato == 0)
+    {
+        return counter;
+    }
     forEach(iter, reg){
         counter++;
     }
@@ -108,11 +185,21 @@ PazienteDet getPazienteByCf(struct ast *a){
 
     Registro *reg = &((struct getPaziente *)a)->varReg->registro;
     Registro *iter;
+    
+    /**
+     * Se il primo paziente del registro ha il 
+     * flag occupato == 0 allora il registro sarà vuoto.
+     */
+    if(reg->occupato == 0) {
+        return ris;
+    }
     forEach(iter, reg){
         if (!strcasecmp(iter->paziente.cf, cf)){
             return iter->paziente;
         }
     }
+    printf("%s\n", ris.cf);
+
     return ris;
 }
 
@@ -139,6 +226,14 @@ int getPositiviByFilter(struct ast *a){
     Registro *reg = &((struct numPositiviByFilter *)a)->varReg->registro;
     Registro *iter;
 
+    /**
+     * Se il primo paziente del registro ha il 
+     * flag occupato == 0 allora il registro sarà vuoto.
+     */
+    if (reg->occupato == 0)
+    {
+        return counter;
+    }
     forEach(iter, reg){
 
         if (filterForDate && (!strcasecmp(iter->paziente.dataTamp, filter)) && (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\"")))

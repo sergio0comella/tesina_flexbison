@@ -19,3 +19,7 @@ paz = PAZIENTE("CMLSRG97C28B780E","11Set1997","Positivo","Sicilia",1)
     r.ADD(paziente3)
     r.ADD(paziente5)
     r.POSIN("11-08-2020")
+
+
+
+while(EOF != fscanf(file, ))

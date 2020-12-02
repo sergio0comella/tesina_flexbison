@@ -54,6 +54,7 @@ struct var *lookup(char *nome)
             variabile->paziente.isRicoverato = 0;
             variabile->registro.idReg = 0;
             variabile->registro.indice = 0;
+            variabile->registro.occupato = 0;
             variabile->registro.pazienteSucc = NULL;
 
             return variabile;

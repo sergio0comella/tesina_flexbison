@@ -15,6 +15,7 @@ typedef struct registro {
     int nodetype;
     int idReg;
     int indice;
+    int occupato; 
     struct pazienteDet paziente;
     struct registro *pazienteSucc;
 } Registro;
@@ -139,11 +140,18 @@ struct numPositiviByFilter {
     struct ast *filter;
 };
 
+/* Struttura per stampare un determinato valore val */
 struct print {
     int nodetype;
     struct ast *val;
 };
 
+/* Struttura per importare dati da un file */
+struct importDet {
+    int nodetype;
+    struct var *varReg;
+    struct ast *fileUrl;
+};
 
 /*costruzione AST*/
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
@@ -172,6 +180,9 @@ struct ast *numRicoverati(struct var* var);
 struct ast *numPositiviByFilter(struct var *var, struct ast *filter);
 //H
 struct ast *newPrint(struct ast *a);
+//J
+struct ast *import(struct var *var, struct ast *fileUrl);
+
 
 /*cancellazione nodi*/
 void treefree(struct ast *);
