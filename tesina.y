@@ -81,6 +81,7 @@ stmt: exp
     | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
     | USRVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
     | USRVAR '.' IMPORT '(' exp ')'                               { $$ = import($1,$5); }
+    | USRVAR '.' EXPORT '('')'                                    { $$ = export($1); }
     | STAMPA ':' stmt                                             { $$ = newPrint($3); }
 ;
 

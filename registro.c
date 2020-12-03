@@ -8,28 +8,38 @@
 #define forEach(item, list) \
     for (item = list; item != NULL; item = item->pazienteSucc)
 
+// Inserisce i pazienti estratti dal file esterno nel registro
+int importToRegistro(struct pazienteDet paz, struct ast *a ) {
+    //((struct importDet *)a)->varReg->registro
 
+    PazienteDet pazTemp = paz;
 
-int importToRegistro(struct pazienteDet pazTemp, struct registro registro ) {
-    
+    /*printf("\npazTemp.cf: %s\n", pazTemp.cf);
+    printf("paz.dataTamp: %s\n", pazTemp.dataTamp);
+    printf("recors[0].esitoTamp: %s\n", pazTemp.esitoTamp);
+    printf("recors[0].regione: %s\n", pazTemp.regione);
+    printf("paz.isRic: %d\n", pazTemp.isRicoverato);*/
+
     /* Caso in cui il registro sia vuoto */
-    if (registro.paziente.cf == NULL) {
-            registro.occupato = 1;
-            registro.paziente = pazTemp;
-            printf("\nENTRATO\n");
+    if (((struct importDet *)a)->varReg->registro.paziente.cf == NULL) {
+            ((struct importDet *)a)->varReg->registro.occupato = 1;
+            ((struct importDet *)a)->varReg->registro.paziente = pazTemp;
+            //printf("\nENTRATO\n\n");
             return 1;
     }
 
+    //printf("REGISTRO->paziente.cf: %s\n", ((struct importDet *)a)->varReg->registro.paziente.cf);
+
     /* Scorro la lista di pazienti per arrivare al primo posto disponibile e
      controllo che il paziente non sia già stato inserito nel registro */
-    struct registro *lastPaziente = &registro;
+    struct registro *lastPaziente = &((struct importDet *)a)->varReg->registro;
     while (lastPaziente->pazienteSucc != NULL) {
         /*if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
             return 0;       
        }*/
 
         lastPaziente = lastPaziente->pazienteSucc;
-        printf("lastPaziente->paziente.cf: %s\n", lastPaziente->paziente.cf);
+        //printf("LASTPAZIENTE->paziente.cf: %s\n", lastPaziente->paziente.cf);
     }
 
     /*controllo anche l'ultimo elemento che viene escluso dal while*/
@@ -40,7 +50,7 @@ int importToRegistro(struct pazienteDet pazTemp, struct registro registro ) {
 
     /* Inseriamo il paziente */
     struct registro *rTemp = malloc(sizeof(struct registro));
-    rTemp->idReg = registro.idReg;
+    rTemp->idReg = ((struct importDet *)a)->varReg->registro.idReg;
     rTemp->nodetype = NODE_REGISTRO;
     rTemp->paziente = pazTemp;
     rTemp->indice = lastPaziente->indice + 1;
@@ -50,7 +60,6 @@ int importToRegistro(struct pazienteDet pazTemp, struct registro registro ) {
     /*risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;*/
     return 1;   
 }
-
 
 
 
@@ -75,6 +84,8 @@ int addPazienteToRegistro(struct ast *a)
         ((struct addPaziente *)a)->varReg->registro.occupato = 1;
         return 1;
     }
+
+    //printf("registro->paziente.cf: %s\n", ((struct addPaziente *)a)->varReg->registro.paziente.cf);
 
     /* Scorro la lista di pazienti per arrivare al primo posto disponibile e
      controllo che il paziente non sia già stato inserito nel registro */
@@ -198,7 +209,7 @@ PazienteDet getPazienteByCf(struct ast *a){
             return iter->paziente;
         }
     }
-    printf("%s\n", ris.cf);
+    //printf("%s\n", ris.cf);
 
     return ris;
 }

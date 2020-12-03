@@ -122,17 +122,16 @@ struct result eval(struct ast *a)
         risultato.risD = getTotaleRicoverati(a);
         break;
 
-
-
-
-
-
-    case NODE_IMPORT:{
-        
+    /* Importare dati da file esterno */
+    case NODE_IMPORT:
+    {        
         char *fileUrl = eval(((struct importDet *)a)->fileUrl).risS;
         Registro reg = ((struct importDet *)a)->varReg->registro;
 
-        Registro *regTemp = &reg;
+        Registro regTemp; 
+        regTemp.idReg = ((struct importDet *)a)->varReg->registro.idReg;
+        regTemp.indice = ((struct importDet *)a)->varReg->registro.indice;
+
         /**
          * La stringa del filename arriva con gli apici. 
          * Pulisco la stringa dal primo e dall'ultimo carattere.
@@ -155,6 +154,12 @@ struct result eval(struct ast *a)
 
         struct pazienteDet records[1000];
         char line[1024];
+        char *cf;
+        char *esitoTamp;
+        char *dataTamp;
+        char *regione;
+        int isRicoverato;
+        int data = 0;
 
         while (fgets(line, 1024, f))
         {
@@ -166,44 +171,44 @@ struct result eval(struct ast *a)
                 switch (field)
                 {
                     case 1:
-                        records->cf = tok;
+                        cf = strdup(tok);
                         break; 
                     case 2:
-                        records->dataTamp = tok;
+                        dataTamp = strdup(tok);
                         break;
                     case 3:
-                        records->esitoTamp = tok;
+                        esitoTamp = strdup(tok);
                         break;
                     case 4: 
-                        records->regione = tok;
+                        regione = strdup(tok);
                         break;
                     case 5: 
-                        records->isRicoverato = atoi(tok);
+                        isRicoverato = atoi(strdup(tok));
                         break;
                     default:
                         yyerror("Errore switch case records-tok");
                 }
 
-                //printf("TOK[%d]=%s\n", field, tok);
                 field++;
-                if(field > 5) {          
-                    printf("recors[0].cf: %s\n", records[0].cf);
-                    printf("recors[0].dataTamp: %s\n", records[0].dataTamp);
-                    printf("recors[0].esitoTamp: %s\n", records[0].esitoTamp);
-                    printf("recors[0].regione: %s\n", records[0].regione);
-                    printf("recors[0].isRic: %d\n\n", records[0].isRicoverato);
-                    int res = importToRegistro(records[0],regTemp);
-                        if(res == 0) {
-                            printf("Problema aggiunta paziente\n");
-                        }
+                if(field > 5) 
+                {
+                    records[data].cf = cf;
+                    records[data].dataTamp = dataTamp;
+                    records[data].esitoTamp = esitoTamp;
+                    records[data].regione = regione;
+                    records[data].isRicoverato = isRicoverato; 
+                    data+=1;                             
                     field = 1;
                 }
             }
 
             free(tmp);
         }
+    
+        for(int j = 0; j < data; j++) {
+            importToRegistro(records[j],a);
+        }
 
-        printf("");
         risultato.risS = "Dati importati correttamente";
         break;
     }
