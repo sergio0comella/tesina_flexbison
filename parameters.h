@@ -8,6 +8,7 @@
 #define NODE_PRINT  'H'
 #define NODE_IF 'I'
 #define NODE_IMPORT 'J'
+#define NODE_EXPORT 'K'
 #define NODE_SEQOP 'L'
 #define NODE_REGISTRO 'O'
 #define NODE_PAZIENTE 'P'

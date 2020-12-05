@@ -1,11 +1,14 @@
 TO DO:
 
 - Prevedere comando di clear, per cancellare tutto o alcune parti
+
 - Cercare di risolvere il problema che se c'è un errore sintattico salta tutto quello fatto prima
 
--Sistemare funzione di stampa 
-
 -Capire casting tra struct
+
+-Vedre se è possibile dividere le stmt del parser per generare errori sintattici
+
+-Stampare tutti i pazienti di un registro scrivendo il nome del registro istanziato
 
 
 paziente3 = PAZIENTE("CMLSRG","11Set1997","Positivo","Sicilia",0)

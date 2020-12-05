@@ -390,3 +390,24 @@ struct ast *import(struct var *var, struct ast *fileUrl) {
     return a;
 }
 
+struct ast *export(struct var *var) {
+
+    struct exportDet *a = malloc(sizeof(struct exportDet));
+    
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    if(var->registro.idReg == 0) {
+      yyerror("Registro non istanziato");  
+    }
+
+    a->nodetype = 'K';
+    a->varReg = var;
+
+    return a;
+
+}
+

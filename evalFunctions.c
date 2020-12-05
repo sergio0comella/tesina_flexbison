@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "tesina.h"
 #include "parameters.h"
 
@@ -123,93 +124,25 @@ struct result eval(struct ast *a)
         break;
 
     /* Importare dati da file esterno */
-    case NODE_IMPORT:
-    {        
-        char *fileUrl = eval(((struct importDet *)a)->fileUrl).risS;
-        Registro reg = ((struct importDet *)a)->varReg->registro;
-
-        Registro regTemp; 
-        regTemp.idReg = ((struct importDet *)a)->varReg->registro.idReg;
-        regTemp.indice = ((struct importDet *)a)->varReg->registro.indice;
-
-        /**
-         * La stringa del filename arriva con gli apici. 
-         * Pulisco la stringa dal primo e dall'ultimo carattere.
-         */
-       	int i , len = strlen(fileUrl); 
-        for(i=1;i<len-1;i++){ 
-            fileUrl[i-1] = fileUrl[i]; 
-        } 
-        fileUrl[i-1] = '\0'; 
-
-        int number;
-        
-        FILE *f;
-        f = fopen(fileUrl, "r");
-
-        if(!f) {
-            yyerror("Problema lettura file");
-            exit(0);
+    case NODE_IMPORT: 
+    {    
+        int result = startImportToRegistro(a);
+        if(result > 0){
+            risultato.risS = "Dati importati correttamente.";
+        }else{
+            risultato.risS = "Errore nell'import dei dati.";
         }
-
-        struct pazienteDet records[1000];
-        char line[1024];
-        char *cf;
-        char *esitoTamp;
-        char *dataTamp;
-        char *regione;
-        int isRicoverato;
-        int data = 0;
-
-        while (fgets(line, 1024, f))
-        {
-            char* tmp = strdup(line);
-            const char *tok;
-            int field = 1;
-            for (tok = strtok(tmp, ";"); tok && *tok; tok = strtok(NULL, ";\n")) 
-            {
-                switch (field)
-                {
-                    case 1:
-                        cf = strdup(tok);
-                        break; 
-                    case 2:
-                        dataTamp = strdup(tok);
-                        break;
-                    case 3:
-                        esitoTamp = strdup(tok);
-                        break;
-                    case 4: 
-                        regione = strdup(tok);
-                        break;
-                    case 5: 
-                        isRicoverato = atoi(strdup(tok));
-                        break;
-                    default:
-                        yyerror("Errore switch case records-tok");
-                }
-
-                field++;
-                if(field > 5) 
-                {
-                    records[data].cf = cf;
-                    records[data].dataTamp = dataTamp;
-                    records[data].esitoTamp = esitoTamp;
-                    records[data].regione = regione;
-                    records[data].isRicoverato = isRicoverato; 
-                    data+=1;                             
-                    field = 1;
-                }
-            }
-
-            free(tmp);
+        break;
+    }
+    /* Export su file*/
+    case NODE_EXPORT:
+    {
+        int result = exportRegistroToFile(a);
+        if(result > 0){
+            risultato.risS = "Dati esportati correttamente";
+        }else{
+            risultato.risS = "Errore nell'export dei dati";
         }
-    
-        for(int j = 0; j < data; j++) {
-            importToRegistro(records[j],a);
-        }
-
-        risultato.risS = "Dati importati correttamente";
         break;
     }
 
@@ -382,6 +315,16 @@ struct result evalExpr(struct ast *a)
 
    switch (a->nodetype)
    {
+    
+   case 'M':
+        risLeft = eval(a->l);
+        if (findType(risLeft) == 1) {
+            risExpr.risD = -risLeft.risD;
+            break;
+        }
+        risExpr.risD = 0;
+        break;
+
    case '+':
         risLeft = eval(a->l);
         risRight = eval(a->r);
@@ -390,12 +333,16 @@ struct result evalExpr(struct ast *a)
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
+
+            //rimuove l'ultimo carattere della stringa (")
+            int size = strlen(risLeft.risS); 
+            risLeft.risS[size - 1] = '\0';
+            //rimuovo il primo carattere della stringa (")
+            memmove(risRight.risS, risRight.risS + 1, strlen(risRight.risS));
+
             risExpr.risS = strcat(risLeft.risS,risRight.risS);
             break;
         }
-        /*if (left == 4 && right == 4) {
-            
-        }*/
         risExpr.risD = 0;
         break;
    
@@ -403,7 +350,7 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = risRight.risD - risLeft.risD;
+            risExpr.risD = risLeft.risD - risRight.risD;
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
@@ -432,7 +379,7 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = risRight.risD / risLeft.risD;
+            risExpr.risD = risLeft.risD / risRight.risD;
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {

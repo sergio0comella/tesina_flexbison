@@ -7,11 +7,8 @@
 
 int main(int argc, char const *argv[])
 {   
-    char *str = strdup("AFFFF");
+    double d = -10;
 
-    for(int i = 0; str[i]; i++){
-        str[i] = tolower(str[i]);
-        printf("char: %c\n", str[i]);
-    }
+    printf("%f\n", d);
 }
 

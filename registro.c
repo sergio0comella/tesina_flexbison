@@ -2,70 +2,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
 #include "tesina.h"
 #include "parameters.h"
 
 #define forEach(item, list) \
     for (item = list; item != NULL; item = item->pazienteSucc)
-
-// Inserisce i pazienti estratti dal file esterno nel registro
-int importToRegistro(struct pazienteDet paz, struct ast *a ) {
-    //((struct importDet *)a)->varReg->registro
-
-    PazienteDet pazTemp = paz;
-
-    /*printf("\npazTemp.cf: %s\n", pazTemp.cf);
-    printf("paz.dataTamp: %s\n", pazTemp.dataTamp);
-    printf("recors[0].esitoTamp: %s\n", pazTemp.esitoTamp);
-    printf("recors[0].regione: %s\n", pazTemp.regione);
-    printf("paz.isRic: %d\n", pazTemp.isRicoverato);*/
-
-    /* Caso in cui il registro sia vuoto */
-    if (((struct importDet *)a)->varReg->registro.paziente.cf == NULL) {
-            ((struct importDet *)a)->varReg->registro.occupato = 1;
-            ((struct importDet *)a)->varReg->registro.paziente = pazTemp;
-            //printf("\nENTRATO\n\n");
-            return 1;
-    }
-
-    //printf("REGISTRO->paziente.cf: %s\n", ((struct importDet *)a)->varReg->registro.paziente.cf);
-
-    /* Scorro la lista di pazienti per arrivare al primo posto disponibile e
-     controllo che il paziente non sia già stato inserito nel registro */
-    struct registro *lastPaziente = &((struct importDet *)a)->varReg->registro;
-    while (lastPaziente->pazienteSucc != NULL) {
-        /*if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
-            return 0;       
-       }*/
-
-        lastPaziente = lastPaziente->pazienteSucc;
-        //printf("LASTPAZIENTE->paziente.cf: %s\n", lastPaziente->paziente.cf);
-    }
-
-    /*controllo anche l'ultimo elemento che viene escluso dal while*/
-    /*if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
-        printf("ENTRATO ULTIMO STRCASE");
-        return 0;
-    }*/
-
-    /* Inseriamo il paziente */
-    struct registro *rTemp = malloc(sizeof(struct registro));
-    rTemp->idReg = ((struct importDet *)a)->varReg->registro.idReg;
-    rTemp->nodetype = NODE_REGISTRO;
-    rTemp->paziente = pazTemp;
-    rTemp->indice = lastPaziente->indice + 1;
-    rTemp->pazienteSucc = NULL;
-    lastPaziente->pazienteSucc = rTemp;
-
-    /*risultato.risP = ((struct addPaziente*)a)->varReg->registro.paziente;*/
-    return 1;   
-}
-
-
-
-
-
-
 
 
 int addPazienteToRegistro(struct ast *a)
@@ -261,4 +203,160 @@ int getPositiviByFilter(struct ast *a){
         printf("Nessun paziente trovato con i criteri ricercati.");
     }
     return counter;
+}
+
+int startImportToRegistro(struct ast *a){
+
+    char *fileUrl = eval(((struct importDet *)a)->fileUrl).risS;
+    //Registro reg = ((struct importDet *)a)->varReg->registro;
+
+    /**
+     * La stringa del filename arriva con gli apici. 
+     * Pulisco la stringa dal primo e dall'ultimo carattere.
+     */
+    int i , len = strlen(fileUrl); 
+    for(i=1;i<len-1;i++){ 
+        fileUrl[i-1] = fileUrl[i]; 
+    } 
+    fileUrl[i-1] = '\0'; 
+
+    int number;
+    
+    FILE *f;
+    f = fopen(fileUrl, "r");
+
+    if(!f) {
+        yyerror("Problema lettura file");
+        exit(0);
+    }
+
+    struct pazienteDet records[1000];
+    char line[1024];
+    char *cf;
+    char *esitoTamp;
+    char *dataTamp;
+    char *regione;
+    int isRicoverato;
+    int data = 0;
+
+    while (fgets(line, 1024, f))
+    {
+        char* tmp = strdup(line);
+        const char *tok;
+        int field = 1;
+        for (tok = strtok(tmp, ";"); tok && *tok; tok = strtok(NULL, ";\n")) 
+        {
+            switch (field)
+            {
+                case 1:
+                    cf = strdup(tok);
+                    break; 
+                case 2:
+                    dataTamp = strdup(tok);
+                    break;
+                case 3:
+                    esitoTamp = strdup(tok);
+                    break;
+                case 4: 
+                    regione = strdup(tok);
+                    break;
+                case 5: 
+                    isRicoverato = atoi(strdup(tok));
+                    break;
+                default:
+                    yyerror("Errore switch case records-tok");
+            }
+
+            field++;
+            if(field > 5) 
+            {
+                records[data].cf = cf;
+                records[data].dataTamp = dataTamp;
+                records[data].esitoTamp = esitoTamp;
+                records[data].regione = regione;
+                records[data].isRicoverato = isRicoverato; 
+                data+=1;                             
+                field = 1;
+            }
+        }
+
+        free(tmp);
+    }
+
+    for(int j = 0; j < data; j++) {
+        importToRegistro(records[j],a);
+    }
+
+    return 1;
+}
+// Inserisce i pazienti estratti dal file esterno nel registro
+int importToRegistro(struct pazienteDet paz, struct ast *a ) {
+    //((struct importDet *)a)->varReg->registro
+
+    PazienteDet pazTemp = paz;
+
+    /* Caso in cui il registro sia vuoto */
+    if (((struct importDet *)a)->varReg->registro.paziente.cf == NULL) {
+            ((struct importDet *)a)->varReg->registro.occupato = 1;
+            ((struct importDet *)a)->varReg->registro.paziente = pazTemp;
+            //printf("\nENTRATO\n\n");
+            return 1;
+    }
+
+    /* Scorro la lista di pazienti per arrivare al primo posto disponibile e
+     controllo che il paziente non sia già stato inserito nel registro */
+    struct registro *lastPaziente = &((struct importDet *)a)->varReg->registro;
+    while (lastPaziente->pazienteSucc != NULL) {
+       
+        lastPaziente = lastPaziente->pazienteSucc;
+    }
+
+    /* Inseriamo il paziente */
+    struct registro *rTemp = malloc(sizeof(struct registro));
+    rTemp->idReg = ((struct importDet *)a)->varReg->registro.idReg;
+    rTemp->nodetype = NODE_REGISTRO;
+    rTemp->paziente = pazTemp;
+    rTemp->indice = lastPaziente->indice + 1;
+    rTemp->pazienteSucc = NULL;
+    lastPaziente->pazienteSucc = rTemp;
+
+    return 1;   
+}
+
+int exportRegistroToFile(struct ast *a){
+    Registro *reg = &((struct importDet *)a)->varReg->registro;
+
+    char fileUrl[128];
+    time_t now;
+    struct tm tm_now;
+    now = time(NULL);
+    localtime_r(&now, &tm_now);
+
+    strftime(fileUrl, sizeof(fileUrl), "export/export_registro_%Y%m%d%H%M.csv", &tm_now);
+
+    FILE *f;
+    f = fopen(fileUrl, "a");
+
+    if (!f)
+    {
+        yyerror("Problema apertura file");
+        exit(0);
+    }
+
+    Registro *iter;
+
+    forEach(iter, reg)
+    {
+        fprintf(
+            f,
+            "%s;%s;%s;%s;%d\n",
+            iter->paziente.cf,
+            iter->paziente.dataTamp,
+            iter->paziente.esitoTamp,
+            iter->paziente.regione,
+            iter->paziente.isRicoverato);
+    }
+
+    fclose(f);
+    return 1;
 }

@@ -29,7 +29,6 @@ struct result {
     int flagPrint;
 };
 
-
 /* Varibile definita dall'utente che può essere un Double, una String o un Paziente o un Registro */
 struct var {
     int varType;        //D -> Double, S -> String, P -> Paziente, R -> Registro
@@ -153,6 +152,12 @@ struct importDet {
     struct ast *fileUrl;
 };
 
+/* Struttura per esportare i dati */
+struct exportDet {
+    int nodetype;
+    struct var *varReg;
+};
+
 /*costruzione AST*/
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);                                                                           // D
@@ -182,6 +187,8 @@ struct ast *numPositiviByFilter(struct var *var, struct ast *filter);
 struct ast *newPrint(struct ast *a);
 //J
 struct ast *import(struct var *var, struct ast *fileUrl);
+//K
+struct ast *export(struct var *var);
 
 
 /*cancellazione nodi*/
