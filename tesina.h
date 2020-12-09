@@ -197,6 +197,7 @@ void treefree(struct ast *);
 /* Analisi e manipolazione albero sintattico che si è costruito */
 void processTree(int,struct ast *);
 void stampaRegistro(struct registro risO);
+void stampaPaziente(struct pazienteDet risP);
 struct result eval(struct ast *a);
 struct result evalExpr(struct ast *a);
 struct result evalAsgn(struct ast *a);

@@ -81,7 +81,8 @@ stmt: exp
 ;
 
 paz: 
-    PAZVAR '=' stmt                                             { $$ = newasgn($1, $3); }
+    PAZVAR '=' stmt                                               { $$ = newasgn($1, $3); }
+    | PAZVAR                                                      { $$ = newref($1); }
     | PAZVAR '.' CF                                               { $$ = newGet($1,1); }
     | PAZVAR '.' ESITOTAMP                                        { $$ = newGet($1,2); }
     | PAZVAR '.' DATATAMP                                         { $$ = newGet($1,3); }
@@ -90,7 +91,8 @@ paz:
 ;
 
 reg:
-    REGVAR '=' stmt                                             { $$ = newasgn($1, $3); }
+    REGVAR '=' stmt                                               { $$ = newasgn($1, $3); }
+    | REGVAR                                                      { $$ = newref($1); }
     | REGVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
     | REGVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
     | REGVAR '.' IMPORT '(' exp ')'                               { $$ = import($1,$5); }
@@ -105,12 +107,11 @@ exp: NUMBER                                                       { $$ = newnum(
     | '|' exp                                                     { $$ = newast('|', $2, NULL); }
     | '(' exp ')'                                                 { $$ = $2; }
     | '-' exp %prec UMINUS                                        { $$ = newast('M', $2, NULL); }
+    | USRVAR                                                      { $$ = newref($1); }
     | STRING                                                      { $$ = newString($1); }
     | DATE                                                        { $$ = newString($1); }
     | STRINGVAR                                                   { $$ = newref($1); }
     | NUMVAR                                                      { $$ = newref($1); }
-    | PAZVAR                                                      { $$ = newref($1); }
-    | REGVAR                                                      { $$ = newref($1); }
     | REGVAR '.' NPAZ                                             { $$ = numPazienti($1); }
     | REGVAR '.' NPOS                                             { $$ = numPositivi($1); }
     | REGVAR '.' NRIC                                             { $$ = numRicoverati($1); }

@@ -310,6 +310,7 @@ struct result evalExpr(struct ast *a)
     risExpr.flagPrint = 0;
 
     struct result risLeft;
+    risLeft.risD = NaN;
     struct result risRight;
 
     /* Numeri (double)
@@ -335,8 +336,10 @@ struct result evalExpr(struct ast *a)
    case '+':
         risLeft = eval(a->l);
         risRight = eval(a->r);
+        printf("aaa %d\n", findType(risLeft));
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
             risExpr.risD = risRight.risD + risLeft.risD;
+            printf("risExpr.risD%f\n", risExpr.risD);
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {

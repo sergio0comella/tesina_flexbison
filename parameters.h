@@ -19,6 +19,8 @@
 #define NODE_NUMPAZ 'Z'
 #define NODE_EQUAL '='
 
+#define NaN 9999999
+
 #define REGEX_DATA "\"(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[[:digit:]][[:digit:]]\""
 #define REGEX_COUNTRY "[a-zA-Z]+"
 

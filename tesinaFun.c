@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <regex.h>
 #include "tesina.h"
+#include "parameters.h"
 
 #define forEach(item, list) \
     for (item = list; item != NULL; item = item->pazienteSucc)
@@ -86,32 +87,14 @@ void processTree(int print, struct ast *a)
             printf(" = %s\n\n", risultato.risS);
             printf("\033[0m");
         } else if (risultato.risP.cf != NULL) {
-            printf("\033[1;37m");
-            printf("\n----------");
-            printf("| DATI PAZIENTE |");
-            printf("----------\n");
-            printf("|Cod. Fiscale: %s\n", risultato.risP.cf);
-            printf("|Data Tamp: %s\n", risultato.risP.dataTamp);
-            printf("|Esito Tamp: %s\n", risultato.risP.esitoTamp);
-            printf("|Regione: %s\n", risultato.risP.regione);
-            printf("|Ricoverato: %s\n", risultato.risP.isRicoverato == 1 ? "Sì" : "No");
-            printf("-------------------------");
-            printf("------------\n\n");
-            printf("\033[0m");
+            stampaPaziente(risultato.risP);
         } else {
             if(risultato.risO.idReg != NULL && risultato.risO.occupato == 0) {
                 printf("\033[0;32m");
                 printf("Registro inizializzato e vuoto.\n\n");
                 printf("\033[0m");
             } else if(risultato.risO.idReg != NULL && risultato.risO.occupato == 1) {
-                printf("\033[1;37m");
-                printf("\n----------");
-                printf("| REGISTRO |");
-                printf("----------\n");
                 stampaRegistro(risultato.risO);
-                printf("--------------------");
-                printf("------------\n\n");
-                printf("\033[0m");
             } else {
                 printf("\033[0;m");
                 printf(" = %4.4g\n\n", risultato.risD);
@@ -121,15 +104,41 @@ void processTree(int print, struct ast *a)
     }
 }
 
+void stampaPaziente(struct pazienteDet risP) {
+    printf("\033[1;37m");
+    printf("\n----------");
+    printf("| DATI PAZIENTE |");
+    printf("----------\n");
+    printf("|Cod. Fiscale: %s\n", risP.cf);
+    printf("|Data Tamp: %s\n", risP.dataTamp);
+    printf("|Esito Tamp: %s\n", risP.esitoTamp);
+    printf("|Regione: %s\n", risP.regione);
+    printf("|Ricoverato: %s\n", risP.isRicoverato == 1 ? "Sì" : "No");
+    printf("-------------------------");
+    printf("------------\n\n");
+    printf("\033[0m");   
+}
+
 void stampaRegistro(struct registro risO) {
     
     Registro *iter;
     struct registro *reg = &risO;
+    int counter = 1;
+
+    printf("\033[1;37m");
+    printf("\n----------");
+    printf("| REGISTRO |");
+    printf("----------\n");
 
     forEach(iter, reg)
     {
-        printf("| - Cod. Fiscale: %s\n",iter->paziente.cf);
+        printf("|%d.   %s\n",counter,iter->paziente.cf);
+        counter+=1;
     }
+
+    printf("--------------------");
+    printf("------------\n\n");
+    printf("\033[0m");
 }
 
 
@@ -173,22 +182,26 @@ int createUID() {
     return uid;
 }
 
-void yyerror(char *s, ...)
-{
-    va_list ap;
-    va_start(ap, s);
-    fprintf(stderr, "\033[0;31m");
-    fprintf(stderr, "%d: error: ", yylineno);
-    vfprintf(stderr, s, ap);
-    fprintf(stderr, "\n");
-    fprintf(stderr,"\033[0m");
-    //printNotValidCommand();
+void printNotValidCommand(char *s){
+    printf("\033[0;31m");
+    if(s){
+        printf("%s.\n", s);
+    }else{
+        printf("Errore di sintassi, verificare le istruzioni inserite.\n");
+    }
+    printf("\033[0m");
 }
 
-void printNotValidCommand(){
-    printf("\033[0;31m");
-    printf("Ultimo comando inserito non riconosciuto. Riprova.\n");
-    printf("\033[0m");
+void yyerror(char *s, ...)
+{
+    //va_list ap;
+    //va_start(ap, s);
+    //fprintf(stderr, "\033[0;31m");
+    //fprintf(stderr, "%d: error: ", yylineno);
+    //vfprintf(stderr, s, ap);
+    //fprintf(stderr, "\n");
+    //fprintf(stderr,"\033[0m");
+    printNotValidCommand(s);
 }
 
 int match(const char *string, const char *pattern)
@@ -204,24 +217,24 @@ int match(const char *string, const char *pattern)
 }
 
 int findType(struct result risLeft) {
-    
     int left;
 
-    if (risLeft.risP.cf == NULL && risLeft.risD == 0 && risLeft.risO.idReg == 0){
+    if (risLeft.risP.cf == NULL && risLeft.risD == NaN && risLeft.risO.idReg == 0){
        left = 2; // è una stringa
     }
-
-   if (risLeft.risS == NULL && risLeft.risD == 0 && risLeft.risO.idReg == 0){
+    
+    if (risLeft.risS == NULL && risLeft.risD == NaN && risLeft.risO.idReg == 0){
        left = 3; // è un paziente
     }
-
-   if (risLeft.risD != 0){
+    
+    if (risLeft.risO.idReg != 0){
+       left = 4; // è un registro
+    }
+    
+    if(risLeft.risD != NaN){
        left = 1; // è un double
     }
 
-   if (risLeft.risO.idReg != 0){
-       left = 4; // è un registro
-    }
    return left;
 }
 

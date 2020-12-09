@@ -284,7 +284,10 @@ int startImportToRegistro(struct ast *a){
     }
 
     for(int j = 0; j < data; j++) {
-        importToRegistro(records[j],a);
+        int r = importToRegistro(records[j],a);
+        if( r == 0) {
+            yyerror("Duplicato");
+        }
     }
 
     return 1;
@@ -307,8 +310,14 @@ int importToRegistro(struct pazienteDet paz, struct ast *a ) {
      controllo che il paziente non sia già stato inserito nel registro */
     struct registro *lastPaziente = &((struct importDet *)a)->varReg->registro;
     while (lastPaziente->pazienteSucc != NULL) {
-       
+        if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+            return 0;       
+       }
         lastPaziente = lastPaziente->pazienteSucc;
+    }
+
+    if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+            return 0;       
     }
 
     /* Inseriamo il paziente */
@@ -340,7 +349,6 @@ int exportRegistroToFile(struct ast *a){
     if (!f)
     {
         yyerror("Problema apertura file");
-        exit(0);
     }
 
     Registro *iter;
