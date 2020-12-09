@@ -227,7 +227,7 @@ int startImportToRegistro(struct ast *a){
 
     if(!f) {
         yyerror("Problema lettura file");
-        exit(0);
+        return 0;
     }
 
     struct pazienteDet records[1000];

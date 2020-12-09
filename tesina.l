@@ -61,7 +61,34 @@ EXP ([Ee][-+]?[0-9]+)
 [0-9]+"."[0-9]*{EXP}? | 
 [0-9]+{EXP}?            { yylval.d = atof(yytext); return NUMBER; } /* Double e Int */
 
-[a-zA-Z][a-zA-Z0-9]* { yylval.vr = lookup(yytext); return USRVAR; }
+
+
+
+[a-zA-Z][a-zA-Z0-9]* { struct var* variabile = lookup(yytext); 
+                       yylval.vr = variabile;
+                       if(variabile->varType == NULL) {
+                           return USRVAR;
+                       } else {
+                           switch(variabile->varType )
+                           {
+                               case 'S':
+                                    return STRINGVAR;
+                                    break;
+                                case 'D':
+                                    return NUMVAR;
+                                    break;
+                                case 'P':
+                                    return PAZVAR;
+                                    break;
+                                case 'O':
+                                    return REGVAR;
+                                    break;
+                                default:
+                                    yyerror("Errore valutazione variabile");
+                           }
+                       } 
+                     }
+
 
 [ \t] { }
 "//".* { }

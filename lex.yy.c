@@ -1058,36 +1058,59 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 64 "tesina.l"
-{ yylval.vr = lookup(yytext); return USRVAR; }
+#line 67 "tesina.l"
+{ struct var* variabile = lookup(yytext); 
+                       yylval.vr = variabile;
+                       if(variabile->varType == NULL) {
+                           return USRVAR;
+                       } else {
+                           switch(variabile->varType )
+                           {
+                               case 'S':
+                                    return STRINGVAR;
+                                    break;
+                                case 'D':
+                                    return NUMVAR;
+                                    break;
+                                case 'P':
+                                    return PAZVAR;
+                                    break;
+                                case 'O':
+                                    return REGVAR;
+                                    break;
+                                default:
+                                    yyerror("Errore valutazione variabile");
+                           }
+                       } 
+                     }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 66 "tesina.l"
+#line 93 "tesina.l"
 { }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 67 "tesina.l"
+#line 94 "tesina.l"
 { }
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 69 "tesina.l"
+#line 96 "tesina.l"
 { return EOL; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 71 "tesina.l"
+#line 98 "tesina.l"
 { }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 73 "tesina.l"
+#line 100 "tesina.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1091 "lex.yy.c"
+#line 1114 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2096,7 +2119,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 73 "tesina.l"
+#line 100 "tesina.l"
 
 
 

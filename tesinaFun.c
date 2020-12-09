@@ -7,6 +7,9 @@
 #include <regex.h>
 #include "tesina.h"
 
+#define forEach(item, list) \
+    for (item = list; item != NULL; item = item->pazienteSucc)
+
 /* Funzione di hash che data una stringa ne restiusce il corrispetivo intero */
 static unsigned hashFun(char *stringa)
 {
@@ -95,15 +98,37 @@ void processTree(int print, struct ast *a)
             printf("-------------------------");
             printf("------------\n\n");
             printf("\033[0m");
-        } else if(risultato.risO.idReg != NULL) {
-            printf("\033[0;32m");
-            printf("Registro creato correttamente.\n\n");
-            printf("\033[0m");
         } else {
-            printf("\033[0;m");
-            printf(" = %4.4g\n\n", risultato.risD);
-            printf("\033[0m");
-        }
+            if(risultato.risO.idReg != NULL && risultato.risO.occupato == 0) {
+                printf("\033[0;32m");
+                printf("Registro inizializzato e vuoto.\n\n");
+                printf("\033[0m");
+            } else if(risultato.risO.idReg != NULL && risultato.risO.occupato == 1) {
+                printf("\033[1;37m");
+                printf("\n----------");
+                printf("| REGISTRO |");
+                printf("----------\n");
+                stampaRegistro(risultato.risO);
+                printf("--------------------");
+                printf("------------\n\n");
+                printf("\033[0m");
+            } else {
+                printf("\033[0;m");
+                printf(" = %4.4g\n\n", risultato.risD);
+                printf("\033[0m");
+            }
+        }  
+    }
+}
+
+void stampaRegistro(struct registro risO) {
+    
+    Registro *iter;
+    struct registro *reg = &risO;
+
+    forEach(iter, reg)
+    {
+        printf("| - Cod. Fiscale: %s\n",iter->paziente.cf);
     }
 }
 

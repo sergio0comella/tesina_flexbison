@@ -17,6 +17,7 @@ struct result eval(struct ast *a)
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
     risultato.risO.idReg = 0;
+    risultato.risO.occupato = 0;
     risultato.flagPrint = 0;
     
     switch (a->nodetype)
@@ -80,6 +81,7 @@ struct result eval(struct ast *a)
     /* Inizializzazione registro */
     case NODE_REGISTRO:
         risultato.risO.idReg = createUID();
+        risultato.risO.occupato = 0;
         break;
 
     /* Aggiunta di un paziente al registro */
@@ -174,14 +176,19 @@ struct result eval(struct ast *a)
             risultato.risS = ((struct ref *)a)->var->string;
             break;
         }
-        else
+
+        if (((struct ref *)a)->var->varType == 'P')
         {
-            if (((struct ref *)a)->var->varType == 'P')
-            {
-                risultato.risP = ((struct ref *)a)->var->paziente;
-                break;
-            }
+            risultato.risP = ((struct ref *)a)->var->paziente;
+            break;
         }
+
+        if (((struct ref *)a)->var->varType == 'O')
+        {
+            risultato.risO = ((struct ref *)a)->var->registro;
+            break;
+        }
+        
         risultato.risD = ((struct ref *)a)->var->valore;
         break;
 

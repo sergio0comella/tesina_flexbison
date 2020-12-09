@@ -6,7 +6,7 @@ TO DO:
 
 -Capire casting tra struct
 
--Vedre se è possibile dividere le stmt del parser per generare errori sintattici
+- Capire cosa si deve poter fare sintatticamente e cosa no (es. se permettere di sommare due pazienti ecc...)
 
 -Stampare tutti i pazienti di un registro scrivendo il nome del registro istanziato
 

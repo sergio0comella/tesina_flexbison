@@ -28,7 +28,7 @@
 %token IMPORT EXPORT
 %token STAMPA
 
-%token <vr> USRVAR
+%token <vr> USRVAR NUMVAR STRINGVAR PAZVAR REGVAR
 
 %token EOL
 
@@ -41,7 +41,7 @@
 %left '*' '/'
 %nonassoc '|' UMINUS
 
-%type <a> exp condExp stmt seqOp
+%type <a> exp condExp stmt seqOp paz reg
 
 %start prog
 %%
@@ -56,8 +56,8 @@ prog:
     | prog condExp EOL       {processTree('N',$2); /*treefree($2);*/ printf(""); }
     | prog EOL               { printf(""); }
     | prog error EOL         { yyerrok; yyclearin;}
-    ;
 ;
+
 
 condExp: IF stmt ':' seqOp             { $$ = newCond('I',$2,$4,NULL); }
     | IF stmt ':' seqOp ELSE seqOp     { $$ = newCond('I',$2,$4,$6); }
@@ -69,20 +69,32 @@ seqOp: stmt
 ;
 
 stmt: exp
+    | paz
+    | reg
     | stmt CMP stmt                                               { $$ = newCmp($2, $1, $3); }
     | USRVAR '=' stmt                                             { $$ = newasgn($1, $3); }
+    | STRINGVAR '=' stmt                                          { $$ = newasgn($1, $3); }
+    | NUMVAR '=' stmt                                             { $$ = newasgn($1, $3); }
     | PAZIENTE'(' exp ',' exp ',' exp ',' exp ',' exp ')'         { $$ = newPaziente('P',$3,$5,$7,$9,$11); }
-    | USRVAR '.' CF                                               { $$ = newGet($1,1); }
-    | USRVAR '.' ESITOTAMP                                        { $$ = newGet($1,2); }
-    | USRVAR '.' DATATAMP                                         { $$ = newGet($1,3); }
-    | USRVAR '.' REGIONE                                          { $$ = newGet($1,4); }
-    | USRVAR '.' ISRIC                                            { $$ = newGet($1,5); }
     | REGISTRO '('')'                                             { $$ = newRegistro('O'); }
-    | USRVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
-    | USRVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
-    | USRVAR '.' IMPORT '(' exp ')'                               { $$ = import($1,$5); }
-    | USRVAR '.' EXPORT '('')'                                    { $$ = export($1); }
     | STAMPA ':' stmt                                             { $$ = newPrint($3); }
+;
+
+paz: 
+    PAZVAR '=' stmt                                             { $$ = newasgn($1, $3); }
+    | PAZVAR '.' CF                                               { $$ = newGet($1,1); }
+    | PAZVAR '.' ESITOTAMP                                        { $$ = newGet($1,2); }
+    | PAZVAR '.' DATATAMP                                         { $$ = newGet($1,3); }
+    | PAZVAR '.' REGIONE                                          { $$ = newGet($1,4); }
+    | PAZVAR '.' ISRIC                                            { $$ = newGet($1,5); }
+;
+
+reg:
+    REGVAR '=' stmt                                             { $$ = newasgn($1, $3); }
+    | REGVAR '.' ADD '(' stmt ')'                                 { $$ = addPaziente($1,$5); }
+    | REGVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
+    | REGVAR '.' IMPORT '(' exp ')'                               { $$ = import($1,$5); }
+    | REGVAR '.' EXPORT '('')'                                    { $$ = export($1); }
 ;
 
 exp: NUMBER                                                       { $$ = newnum($1); }
@@ -95,11 +107,14 @@ exp: NUMBER                                                       { $$ = newnum(
     | '-' exp %prec UMINUS                                        { $$ = newast('M', $2, NULL); }
     | STRING                                                      { $$ = newString($1); }
     | DATE                                                        { $$ = newString($1); }
-    | USRVAR                                                      { $$ = newref($1); }
-    | USRVAR '.' NPAZ                                             { $$ = numPazienti($1); }
-    | USRVAR '.' NPOS                                             { $$ = numPositivi($1); }
-    | USRVAR '.' NRIC                                             { $$ = numRicoverati($1); }
-    | USRVAR '.' POSIN '(' exp ')'                                { $$ = numPositiviByFilter($1,$5); }
+    | STRINGVAR                                                   { $$ = newref($1); }
+    | NUMVAR                                                      { $$ = newref($1); }
+    | PAZVAR                                                      { $$ = newref($1); }
+    | REGVAR                                                      { $$ = newref($1); }
+    | REGVAR '.' NPAZ                                             { $$ = numPazienti($1); }
+    | REGVAR '.' NPOS                                             { $$ = numPositivi($1); }
+    | REGVAR '.' NRIC                                             { $$ = numRicoverati($1); }
+    | REGVAR '.' POSIN '(' exp ')'                                { $$ = numPositiviByFilter($1,$5); }
 ;
 
 %%
