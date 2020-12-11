@@ -162,7 +162,7 @@ struct exportDet {
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);                                                                           // D
 struct ast *newString(char *string);                                                                    // S
-struct ast *newasgn(struct var *vr, struct ast *v);                                                     // A
+struct ast *newasgn(struct var *vr, struct ast *v);                                                     // '='
 struct ast *newref(struct var* vr);                                                                     // R 
 struct ast *newCmp(int cmptype, struct ast *l, struct ast *r);                                          // 1-6 
 struct ast *newCond(int nodetype, struct ast *, struct ast *, struct ast*);                             // I o W
@@ -202,7 +202,7 @@ struct result eval(struct ast *a);
 struct result evalExpr(struct ast *a);
 struct result evalAsgn(struct ast *a);
 
-/* Functions Registro*/
+/* Functions Registro */
 int addPazienteToRegistro(struct ast *a);
 int getTotalePositivi(struct ast *a);
 int getTotaleRicoverati(struct ast *a);
@@ -210,3 +210,19 @@ int getPazientiTotali(struct ast *a);
 int getPositiviByFilter(struct ast *a);
 int findType(struct result risLeft);
 PazienteDet getPazienteByCf(struct ast *a);
+
+/* Functions free tree */
+void freeString(struct stringVal *a);
+void freeDouble(struct numval *a);
+void freeRegistro(struct ast *a);
+void freePaziente(struct paziente *a);
+void freeAsgn(struct asgn *a);
+void freePrint(struct print *a);
+void freeGet(struct get *a);
+void freeAddPaziente(struct addPaziente *a);
+void freeRef(struct ref *a);
+void freeNumPos(struct numPositivi *a);
+void freeNumRic(struct numRicoverati *a);
+void freeNumPaz(struct numPazienti *a);
+void freePazienteFilter(struct numPositiviByFilter *a);
+void freeGetPaziente(struct getPaziente *a);

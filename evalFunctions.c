@@ -62,8 +62,8 @@ struct result eval(struct ast *a)
         char *dataTamp = eval(((struct paziente *)a)->dataTamp).risS;
         char *regexDate = REGEX_DATA;
         if (!match(dataTamp, regexDate)){
-            printf("Formato data errato. Formato valido: dd-mm-yyyy.\n");
-            exit(0); //TODO liberare nodo
+            yyerror("Errore\n");
+            risultato.risS = ("Formato data errato. Formato valido: dd-mm-yyyy.\n");
             break;
         }
         risultato.risP.cf = eval(((struct paziente *)a)->cf).risS;
@@ -336,10 +336,8 @@ struct result evalExpr(struct ast *a)
    case '+':
         risLeft = eval(a->l);
         risRight = eval(a->r);
-        printf("aaa %d\n", findType(risLeft));
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
             risExpr.risD = risRight.risD + risLeft.risD;
-            printf("risExpr.risD%f\n", risExpr.risD);
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {

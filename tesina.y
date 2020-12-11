@@ -51,9 +51,9 @@
  * 
  *----------------------------------------------------------------------------*/
 prog:
-    | prog stmt EOL          {processTree('P',$2); /*treefree($2);*/ printf(""); }
-    | prog stmt ';' EOL      {processTree('N',$2); /*treefree($2);*/ printf(""); }
-    | prog condExp EOL       {processTree('N',$2); /*treefree($2);*/ printf(""); }
+    | prog stmt EOL          {processTree('P',$2); treefree($2); printf(""); }
+    | prog stmt ';' EOL      {processTree('N',$2); treefree($2); printf(""); }
+    | prog condExp EOL       {processTree('N',$2); treefree($2); printf(""); }
     | prog EOL               { printf(""); }
     | prog error EOL         { yyerrok; yyclearin;}
 ;

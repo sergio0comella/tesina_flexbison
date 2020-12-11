@@ -2,15 +2,15 @@ TO DO:
 
 - Prevedere comando di clear, per cancellare tutto o alcune parti
 
-- Cercare di risolvere il problema che se c'è un errore sintattico salta tutto quello fatto prima
-
 -Capire casting tra struct
 
-- Capire cosa si deve poter fare sintatticamente e cosa no (es. se permettere di sommare due pazienti ecc...)
-
--Stampare tutti i pazienti di un registro scrivendo il nome del registro istanziato
-
 -unione dei registri
+
+
+- ELIMINARE DATE
+
+
+
 
 
 paziente3 = PAZIENTE("CMLSRG","11Set1997","Positivo","Sicilia",0)

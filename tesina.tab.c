@@ -1192,19 +1192,19 @@ yyreduce:
     {
   case 3: /* prog: prog stmt EOL  */
 #line 54 "tesina.y"
-                             {processTree('P',(yyvsp[-1].a)); /*treefree($2);*/ printf(""); }
+                             {processTree('P',(yyvsp[-1].a)); treefree((yyvsp[-1].a)); printf(""); }
 #line 1197 "tesina.tab.c"
     break;
 
   case 4: /* prog: prog stmt ';' EOL  */
 #line 55 "tesina.y"
-                             {processTree('N',(yyvsp[-2].a)); /*treefree($2);*/ printf(""); }
+                             {processTree('N',(yyvsp[-2].a)); treefree((yyvsp[-2].a)); printf(""); }
 #line 1203 "tesina.tab.c"
     break;
 
   case 5: /* prog: prog condExp EOL  */
 #line 56 "tesina.y"
-                             {processTree('N',(yyvsp[-1].a)); /*treefree($2);*/ printf(""); }
+                             {processTree('N',(yyvsp[-1].a)); treefree((yyvsp[-1].a)); printf(""); }
 #line 1209 "tesina.tab.c"
     break;
 

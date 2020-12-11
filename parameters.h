@@ -1,4 +1,3 @@
-#define NODE_ASGN 'A'
 #define NODE_NUMPOS 'B'
 #define NODE_NUMRIC 'C'
 #define NODE_DOUBLE 'D'
