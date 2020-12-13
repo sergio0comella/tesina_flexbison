@@ -4,9 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "tesina.h"
-#include "parameters.h"
-
+#include "../headers/tesina.h"
+#include "../headers/parameters.h"
 
 /* Funzione di valutazione dell'albero generale */
 struct result eval(struct ast *a)

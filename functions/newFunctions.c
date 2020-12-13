@@ -3,8 +3,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include "parameters.h"
-#include "tesina.h"
+#include "../headers/tesina.h"
+#include "../headers/parameters.h"
 
 struct ast *newast(int nodetype, struct ast *l, struct ast *r)
 {

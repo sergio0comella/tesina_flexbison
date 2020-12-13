@@ -3,12 +3,20 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
-#include "tesina.h"
-#include "parameters.h"
+#include "../headers/tesina.h"
+#include "../headers/parameters.h"
 
 #define forEach(item, list) \
     for (item = list; item != NULL; item = item->pazienteSucc)
 
+/* Funzione per generare un ID casuale per il registro */
+int createUID()
+{
+    srand(time(0));
+
+    int uid = (int)(rand() + 1);
+    return uid;
+}
 
 int addPazienteToRegistro(struct ast *a)
 {
@@ -367,4 +375,52 @@ int exportRegistroToFile(struct ast *a){
 
     fclose(f);
     return 1;
+}
+
+void stampaRegistro(struct registro risO)
+{
+
+    Registro *iter;
+    struct registro *reg = &risO;
+    int counter = 1;
+
+    printf("\033[1;37m");
+    printf("Rosso: Positivi - Verdi: Negativi");
+    printf("\n------------------");
+    printf("| REGISTRO |");
+    printf("------------------\n");
+
+    forEach(iter, reg)
+    {
+        printf("|");
+        if (!strcasecmp(iter->paziente.esitoTamp, "\"positivo\""))
+        {
+            printf("\033[1;31m");
+        }
+        else
+        {
+            printf("\033[1;32m");
+        }
+        printf("%d.\t%-16s\t%s\n", counter, iter->paziente.cf, iter->paziente.dataTamp);
+        printf("\033[0m");
+        counter += 1;
+    }
+    printf("\033[1;37m");
+    printf("------------------------------------------------\n\n");
+    printf("\033[0m");
+}
+
+void stampaPaziente(struct pazienteDet risP)
+{
+    printf("\033[1;37m");
+    printf("\n----------");
+    printf("| DATI PAZIENTE |");
+    printf("----------\n");
+    printf("|Cod. Fiscale: %s\n", risP.cf);
+    printf("|Data Tamp: %s\n", risP.dataTamp);
+    printf("|Esito Tamp: %s\n", risP.esitoTamp);
+    printf("|Regione: %s\n", risP.regione);
+    printf("|Ricoverato: %s\n", risP.isRicoverato == 1 ? "Sì" : "No");
+    printf("-------------------------------------\n\n");
+    printf("\033[0m");
 }

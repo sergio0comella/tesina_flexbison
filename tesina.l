@@ -1,6 +1,6 @@
 %option noyywrap nodefault yylineno
 %{
-    #include "tesina.h"
+    #include "headers/tesina.h"
     #include "tesina.tab.h"
 %}
 
