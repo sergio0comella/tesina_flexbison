@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "tesina.h"
+#include "headers/tesina.h"
 #define YYERROR_VERBOSE 1
   //per eliminare i warning
     int yylex(void);
