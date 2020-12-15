@@ -85,9 +85,57 @@ void treefree(struct ast *a)
         freeNumRic((struct numRicoverati *)a);
         break;
 
+    case NODE_IMPORT:
+        freeImport((struct importDet *) a);
+        break;
+
+    case NODE_EXPORT:
+        freeExport((struct exportDet *) a);
+        break;
+    
+    case NODE_IF:
+    case NODE_WHILE:
+        freeCond((struct cond *) a);
+        break;
+
     default:
+        printf("a->nodetype: %c\n", a->nodetype);
         printf("Errore interno di liberazione memoria\n");
     }
+}
+
+void freeCond(struct cond * a) {
+    
+    if (a == NULL)
+    {
+        return;
+    }
+
+    treefree(a->cond);
+    treefree(a->els);
+    treefree(a->then);
+    free(a);
+} 
+
+void freeExport(struct exportDet *a) {
+
+    if (a == NULL)
+    {
+        return;
+    }
+
+    free(a);    
+}
+
+void freeImport(struct importDet *a) {
+
+    if (a == NULL)
+    {
+        return;
+    }
+
+    treefree(a->fileUrl);
+    free(a);    
 }
 
 void freeNumPos(struct numPositivi *a)

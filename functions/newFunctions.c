@@ -188,7 +188,7 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp, stru
 
     /* paziente3 = PAZIENTE("DGVmrC11G273M","11-08-1997","Positivo","Calabria",1) */
     /*  */
-    /* paziente3 = PAZIENTE("RCT96","10-09-1997","Negativo","Veneto",0)*/
+    /* paziente1 = PAZIENTE(10,"10-09-1997","Negativo","Veneto",0)*/
     /* paziente4 = PAZIENTE("ffff","10-04-1997","Negativo","Lombardia",0) */
     
     a->nodetype = nodetype;

@@ -139,12 +139,14 @@ int match(const char *string, const char *pattern)
 }
 
 int findType(struct result risLeft) {
-    int left;
+    int left = 0;
 
     if (risLeft.risP.cf == NULL && risLeft.risD == NaN && risLeft.risO.idReg == 0){
        left = 2; // è una stringa
     }
     
+    //printf("left1: %d\n", left);
+
     if (risLeft.risS == NULL && risLeft.risD == NaN && risLeft.risO.idReg == 0){
        left = 3; // è un paziente
     }
@@ -156,6 +158,8 @@ int findType(struct result risLeft) {
     if(risLeft.risD != NaN){
        left = 1; // è un double
     }
+
+    //printf("left2: %d\n", left);
 
    return left;
 }

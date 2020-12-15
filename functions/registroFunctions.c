@@ -223,6 +223,7 @@ int startImportToRegistro(struct ast *a){
      * Pulisco la stringa dal primo e dall'ultimo carattere.
      */
     int i , len = strlen(fileUrl); 
+
     for(i=1;i<len-1;i++){ 
         fileUrl[i-1] = fileUrl[i]; 
     } 

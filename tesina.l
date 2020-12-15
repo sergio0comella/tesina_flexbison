@@ -16,10 +16,10 @@ EXP ([Ee][-+]?[0-9]+)
 "getCF"           { return CF; }
 "getDataTamp"     { return DATATAMP; }
 "getEsitoTamp"    { return ESITOTAMP; }
-"getRegione"      { return REGIONE; }
-"isRicoverato"    { return ISRIC; }     /* Paziente e rispettivi "metodi" */
+"getReg"          { return REGIONE; }
+"isRic"           { return ISRIC; }     /* Paziente e rispettivi "metodi" */
 
-"STAMPA" { return STAMPA; }
+"STAMPA" { return STAMPA; }                /* Stampa testo */
 
 "REGISTRO" { return REGISTRO; } 
 "ADD"      { return ADD; }
@@ -60,7 +60,6 @@ EXP ([Ee][-+]?[0-9]+)
 
 [0-9]+"."[0-9]*{EXP}? | 
 [0-9]+{EXP}?            { yylval.d = atof(yytext); return NUMBER; } /* Double e Int */
-
 
 
 

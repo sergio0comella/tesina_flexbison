@@ -12,7 +12,7 @@ struct result eval(struct ast *a)
 {
 
     struct result risultato;
-    risultato.risD = 0;
+    risultato.risD = NaN;
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
     risultato.risO.idReg = 0;
@@ -26,6 +26,7 @@ struct result eval(struct ast *a)
     case NODE_PRINT:
     {
         struct result print;
+
         print = eval(((struct print *)a)->val);
 
         if(print.risS != NULL) {
@@ -34,7 +35,7 @@ struct result eval(struct ast *a)
             break;
         }
 
-        if(print.risD != 0.0) {
+        if(print.risD != NaN) {
             printf("> %4.4g\n\n", print.risD);
             risultato.flagPrint = 1;
             break;
@@ -153,7 +154,31 @@ struct result eval(struct ast *a)
     {
         struct result risAsgn = evalAsgn(a);
 
-        if (risAsgn.risD != 0) {
+        int type = findType(risAsgn);
+
+        if(type == 1) {
+           risultato.risD = risAsgn.risD; 
+           break;
+        }
+
+        if(type == 3) {
+            risultato.risP = risAsgn.risP;
+            break;
+        }
+
+        if(type == 2) {
+           risultato.risS = risAsgn.risS;
+           break; 
+        }
+
+        if(type == 4) {
+            risultato.risO.idReg = risAsgn.risO.idReg;
+            break;
+        }
+
+
+
+        /*if (risAsgn.risD != 0) {
             risultato.risD = risAsgn.risD;
             break;
         } if (risAsgn.risS == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0) {
@@ -165,7 +190,7 @@ struct result eval(struct ast *a)
         } if (risAsgn.risO.idReg != 0) {
             risultato.risO.idReg = risAsgn.risO.idReg;
             break;
-        }
+        }*/
         break;
     }
 
@@ -235,6 +260,7 @@ struct result eval(struct ast *a)
     case '6':
         {
         struct result ris;
+
         ris = evalExpr(a);
         if(findType(ris) == 1) {
             risultato.risD = ris.risD;
@@ -259,19 +285,45 @@ struct result evalAsgn(struct ast *a)
 {
 
     struct result risultato;
-    risultato.risD = 0;
+    risultato.risD = NaN;
     risultato.risS = NULL;
     risultato.risP.cf = NULL;
     risultato.risO.idReg = 0;
 
     struct result risAnnidato;
-    risAnnidato.risD = 0;
+    risAnnidato.risD = NaN;
     risAnnidato.risS = NULL;
     risAnnidato.risP.cf = NULL;
     risAnnidato.risO.idReg = 0;
 
     risAnnidato = eval(((struct asgn *)a)->v);
 
+    int type = findType(risAnnidato);
+
+    if(type == 1) {
+        ((struct asgn *)a)->var->varType = NODE_DOUBLE;
+        //risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD;
+        risultato.risD = ((struct asgn *)a)->var->valore = risAnnidato.risD;
+    }
+
+    if(type == 3) {
+        ((struct asgn *)a)->var->varType = NODE_PAZIENTE;
+        risultato.risP = ((struct asgn *)a)->var->paziente = risAnnidato.risP;
+        //risultato.risP = ((struct asgn *)a)->var->paziente = eval(a->r).risP;
+    }
+
+    if(type == 2) {
+        ((struct asgn *)a)->var->varType = NODE_STRING;
+        risultato.risS = ((struct asgn *)a)->var->string = risAnnidato.risS;
+        //risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
+    }
+
+    if(type == 4) {
+        ((struct asgn *)a)->var->varType = NODE_REGISTRO;
+        //risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = eval(a->r).risO.idReg;
+        risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = risAnnidato.risO.idReg;
+    }
+/*
     if (risAnnidato.risD != 0) 
     {
         ((struct asgn *)a)->var->varType = NODE_DOUBLE;
@@ -294,7 +346,7 @@ struct result evalAsgn(struct ast *a)
         ((struct asgn *)a)->var->varType = NODE_REGISTRO;
         risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = eval(a->r).risO.idReg;
     }
-
+*/
     return risultato;
 }
 
@@ -303,15 +355,17 @@ struct result evalExpr(struct ast *a)
 {
 
     struct result risExpr;
+    risExpr.risD = NaN;
     risExpr.risS = NULL;
-    risExpr.risD = 0;
     risExpr.risP.cf = NULL;
     risExpr.risO.idReg = 0;
+    risExpr.risO.occupato = 0;
     risExpr.flagPrint = 0;
 
     struct result risLeft;
     risLeft.risD = NaN;
     struct result risRight;
+    risRight.risD = NaN;
 
     /* Numeri (double)
     case 'D':

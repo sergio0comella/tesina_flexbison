@@ -190,10 +190,6 @@ struct ast *import(struct var *var, struct ast *fileUrl);
 //K
 struct ast *export(struct var *var);
 
-
-/*cancellazione nodi*/
-void treefree(struct ast *);
-
 /* Analisi e manipolazione albero sintattico che si è costruito */
 void processTree(int,struct ast *);
 void stampaRegistro(struct registro risO);
@@ -211,7 +207,8 @@ int getPositiviByFilter(struct ast *a);
 int findType(struct result risLeft);
 PazienteDet getPazienteByCf(struct ast *a);
 
-/* Functions free tree */
+/* Tree free functions */
+void treefree(struct ast *);
 void freeString(struct stringVal *a);
 void freeDouble(struct numval *a);
 void freeRegistro(struct ast *a);
@@ -226,3 +223,6 @@ void freeNumRic(struct numRicoverati *a);
 void freeNumPaz(struct numPazienti *a);
 void freePazienteFilter(struct numPositiviByFilter *a);
 void freeGetPaziente(struct getPaziente *a);
+void freeCond(struct cond * a);
+void freeExport(struct exportDet *a);
+void freeImport(struct importDet *a);
