@@ -17,11 +17,11 @@ EXP ([Ee][-+]?[0-9]+)
 "WHILE" { return WHILE; }                   /* Strutture condizionali e cicli */
 
 "PAZIENTE"        { return PAZIENTE; }  
-"getCF"           { return CF; }
-"getDataTamp"     { return DATATAMP; }
-"getEsitoTamp"    { return ESITOTAMP; }
-"getReg"          { return REGIONE; }
-"isRic"           { return ISRIC; }         /* Paziente e rispettivi "metodi" */
+"GETCF"           { return CF; }
+"GETDATATAMP"     { return DATATAMP; }
+"GETESITOTAMP"    { return ESITOTAMP; }
+"GETREGIONE"          { return REGIONE; }
+"ISRIC"           { return ISRIC; }         /* Paziente e rispettivi "metodi" */
 
 "REGISTRO" { return REGISTRO; } 
 "ADD"      { return ADD; }

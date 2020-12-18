@@ -98,7 +98,7 @@ void processTree(int print, struct ast *a)
                 stampaRegistro(risultato.risO);
             } else if(risultato.risD != NaN){
                 printf("\033[0;m");
-                printf(" = %f\n\n", risultato.risD);
+                printf(" = %2.2f\n\n", risultato.risD);
                 printf("\033[0m");
             }
         }  
