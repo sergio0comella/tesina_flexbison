@@ -27,8 +27,10 @@
 %token ADD GET NPAZ NPOS NRIC POSIN
 %token IMPORT EXPORT
 %token STAMPA
+%token MACRO
+%token AND OR
 
-%token <vr> USRVAR NUMVAR STRINGVAR PAZVAR REGVAR
+%token <vr> VAR
 
 %token EOL
 
@@ -41,7 +43,7 @@
 %left '*' '/'
 %nonassoc '|' UMINUS
 
-%type <a> exp condExp stmt seqOp paz reg pazvar regvar regfun
+%type <a> exp condExp stmt seqOp paz reg pazvar regvar regfun macroOp macroEval stmtBlock
 
 %start prog
 %%
@@ -51,67 +53,75 @@
  * 
  *----------------------------------------------------------------------------*/
 prog:
-    | prog stmt EOL          {processTree('P',$2); treefree($2); printf(""); }
-    | prog stmt ';' EOL      {processTree('N',$2); treefree($2); printf(""); }
-    | prog condExp EOL       {processTree('N',$2); treefree($2); printf(""); }
+    | prog stmt EOL          { processTree('P',$2); treefree($2); }
+    | prog stmt ';' EOL      { processTree('N',$2); treefree($2); }
+    | prog macroEval EOL     { processTree('N',$2); }
+    | prog condExp EOL       { processTree('N',$2); }
+    | prog macroOp EOL       { processTree('N',$2); }
     | prog EOL               { printf(""); }
     | prog error EOL         { yyerrok; yyclearin;}
 ;
 
+macroEval:
+    VAR '('')'                    { $$ = newMacroCall($1); }
+;
 
-condExp: IF stmt ':' seqOp             { $$ = newCond('I',$2,$4,NULL); }
+macroOp:
+    MACRO VAR '{' EOL stmtBlock '}' { $$ = newMacro($2,$5); }
+;
+
+stmtBlock: stmt EOL
+    | stmtBlock stmt EOL           { $$ = newast('L', $1, $2); }
+    | stmtBlock condExp EOL        { $$ = newast('L', $1,$2); }
+;
+
+condExp: 
+    IF stmt ':' seqOp                  { $$ = newCond('I',$2,$4,NULL); }
     | IF stmt ':' seqOp ELSE seqOp     { $$ = newCond('I',$2,$4,$6); }
     | WHILE stmt ':' seqOp             { $$ = newCond('W',$2,$4,NULL); }
 ;
 
 seqOp: stmt
-    | stmt ';' seqOp { $$ = newast('L', $1, $3); }
+    | stmt ';' seqOp                   { $$ = newast('L', $1, $3); }
 ;
 
 stmt: exp
     | paz
     | reg
     | regfun
-    | '(' exp ')'                                                 { $$ = $2; }
     | stmt CMP stmt                                               { $$ = newCmp($2, $1, $3); }
-    | USRVAR '=' stmt                                             { $$ = newasgn($1, $3); }
-    | STRINGVAR '=' stmt                                          { $$ = newasgn($1, $3); }
-    | NUMVAR '=' stmt                                             { $$ = newasgn($1, $3); }
+    | VAR '=' stmt                                                { $$ = newasgn($1, $3); }
     | STAMPA ':' stmt                                             { $$ = newPrint($3); }
 ;
 
 paz: 
     PAZIENTE'(' exp ',' exp ',' exp ',' exp ',' exp ')'           { $$ = newPaziente('P',$3,$5,$7,$9,$11); }
-    | PAZVAR '=' paz                                              { $$ = newasgn($1, $3); }
-    | PAZVAR                                                      { $$ = newref($1); }
 ;
 
 pazvar:
-    PAZVAR '.' CF                                                 { $$ = newGet($1,1); }
-    | PAZVAR '.' ESITOTAMP                                        { $$ = newGet($1,2); }
-    | PAZVAR '.' DATATAMP                                         { $$ = newGet($1,3); }
-    | PAZVAR '.' REGIONE                                          { $$ = newGet($1,4); }
-    | PAZVAR '.' ISRIC                                            { $$ = newGet($1,5); }
+    VAR '.' CF                                                 { $$ = newGet($1,1); }
+    | VAR '.' ESITOTAMP                                        { $$ = newGet($1,2); }
+    | VAR '.' DATATAMP                                         { $$ = newGet($1,3); }
+    | VAR '.' REGIONE                                          { $$ = newGet($1,4); }
+    | VAR '.' ISRIC                                            { $$ = newGet($1,5); }
 ;
 
 reg:
     REGISTRO '('')'                                               { $$ = newRegistro('O'); }
-    | REGVAR '=' reg                                              { $$ = newasgn($1, $3); }
-    | REGVAR                                                      { $$ = newref($1); }
 ;
 
 regfun:
-    REGVAR '.' ADD '(' paz ')'                                    { $$ = addPaziente($1,$5); }
-    | REGVAR '.' GET '(' exp ')'                                  { $$ = getPaziente($1,$5); }
-    | REGVAR '.' IMPORT '(' exp ')'                               { $$ = import($1,$5); }
-    | REGVAR '.' EXPORT '('')'                                    { $$ = export($1); }
+    VAR '.' ADD '(' stmt ')'                                    { $$ = addPaziente($1,$5); }
+    | VAR '.' GET '(' exp ')'                                   { $$ = getPaziente($1,$5); }
+    | VAR '.' IMPORT '(' exp ')'                                { $$ = import($1,$5); }
+    | VAR '.' EXPORT '('')'                                     { $$ = export($1); }
 ;
 
 regvar:
-    REGVAR '.' NPAZ                                               { $$ = numPazienti($1); }
-    | REGVAR '.' NPOS                                             { $$ = numPositivi($1); }
-    | REGVAR '.' NRIC                                             { $$ = numRicoverati($1); }
-    | REGVAR '.' POSIN '(' exp ')'                                { $$ = numPositiviByFilter($1,$5); }
+    VAR '.' NPAZ                                               { $$ = numPazienti($1); }
+    | VAR '.' NPOS                                             { $$ = numPositivi($1); }
+    | VAR '.' NRIC                                             { $$ = numRicoverati($1); }
+    | VAR '.' POSIN '(' exp ')'                                { $$ = numPositiviByFilter($1,$5); }
 ;
 
 exp:  pazvar
@@ -122,12 +132,10 @@ exp:  pazvar
     | exp '*' exp                                                 { $$ = newast('*', $1,$3); }
     | exp '/' exp                                                 { $$ = newast('/', $1,$3); }
     | '|' exp                                                     { $$ = newast('|', $2, NULL); }
-    | '-' exp %prec UMINUS                                        { $$ = newast('M', $2, NULL); }
-    | USRVAR                                                      { $$ = newref($1); }
+    | '-' exp %prec UMINUS                                        { $$ = newast('N', $2, NULL); }
+    | VAR                                                         { $$ = newref($1); }
     | STRING                                                      { $$ = newString($1); }
-    | DATE                                                        { $$ = newString($1); }
-    | STRINGVAR                                                   { $$ = newref($1); }
-    | NUMVAR                                                      { $$ = newref($1); }
+    | '(' stmt ')'                                                { $$ = $2; }
 ;
 
 %%

@@ -24,7 +24,7 @@ int addPazienteToRegistro(struct ast *a)
     struct pazienteDet pazTemp = eval(((struct addPaziente *)a)->paziente).risP;
 
     if (pazTemp.cf == NULL) {
-        yyerror("Paziente non istanziato");
+        yyerror("Paziente non istanziato\n");
         exit(0);
     }
 
@@ -235,7 +235,7 @@ int startImportToRegistro(struct ast *a){
     f = fopen(fileUrl, "r");
 
     if(!f) {
-        yyerror("Problema lettura file");
+        yyerror("Problema lettura file\n");
         return 0;
     }
 
@@ -295,7 +295,7 @@ int startImportToRegistro(struct ast *a){
     for(int j = 0; j < data; j++) {
         int r = importToRegistro(records[j],a);
         if( r == 0) {
-            yyerror("Duplicato");
+            yyerror("Error: Inserimento di un duplicato\n");
         }
     }
 
@@ -342,7 +342,7 @@ int importToRegistro(struct pazienteDet paz, struct ast *a ) {
 }
 
 int exportRegistroToFile(struct ast *a){
-    Registro *reg = &((struct importDet *)a)->varReg->registro;
+    Registro *reg = &((struct exportDet *)a)->varReg->registro;
 
     char fileUrl[128];
     time_t now;
@@ -357,7 +357,7 @@ int exportRegistroToFile(struct ast *a){
 
     if (!f)
     {
-        yyerror("Problema apertura file");
+        yyerror("Problema apertura file\n");
     }
 
     Registro *iter;

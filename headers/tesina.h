@@ -31,12 +31,13 @@ struct result {
 
 /* Varibile definita dall'utente che può essere un Double, una String o un Paziente o un Registro */
 struct var {
-    int varType;        //D -> Double, S -> String, P -> Paziente, R -> Registro
+    int varType;        //D ->Double, S ->String, P ->Paziente, O->Registro, M->Macro
     char* nome;
     double valore;
     char *string;
     struct pazienteDet paziente;
     struct registro registro;
+    struct ast *macro;
 };
 
 #define NHASH 9997
@@ -158,6 +159,22 @@ struct exportDet {
     struct var *varReg;
 };
 
+/* Struttura per memorizzare le macro operazioni */
+struct macro {
+    int noodetype;
+    struct var *var;
+    struct ast *v;
+};
+
+struct macroCall {
+    int nodetype;
+    struct ast *v;
+};
+
+struct nodeError {
+    int nodetype;
+};
+
 /*costruzione AST*/
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newnum(double d);                                                                           // D
@@ -189,6 +206,11 @@ struct ast *newPrint(struct ast *a);
 struct ast *import(struct var *var, struct ast *fileUrl);
 //K
 struct ast *export(struct var *var);
+//M
+struct ast* newMacro(struct var *vr, struct ast *v);
+//A
+struct ast* newMacroCall(struct var *macrovar);
+
 
 /* Analisi e manipolazione albero sintattico che si è costruito */
 void processTree(int,struct ast *);
@@ -226,3 +248,5 @@ void freeGetPaziente(struct getPaziente *a);
 void freeCond(struct cond * a);
 void freeExport(struct exportDet *a);
 void freeImport(struct importDet *a);
+void freeMacro(struct macro *a);
+void freeCallMacro(struct macroCall *a);

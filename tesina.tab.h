@@ -77,14 +77,13 @@ extern int yydebug;
     IMPORT = 278,                  /* IMPORT  */
     EXPORT = 279,                  /* EXPORT  */
     STAMPA = 280,                  /* STAMPA  */
-    USRVAR = 281,                  /* USRVAR  */
-    NUMVAR = 282,                  /* NUMVAR  */
-    STRINGVAR = 283,               /* STRINGVAR  */
-    PAZVAR = 284,                  /* PAZVAR  */
-    REGVAR = 285,                  /* REGVAR  */
-    EOL = 286,                     /* EOL  */
-    CMP = 287,                     /* CMP  */
-    UMINUS = 288                   /* UMINUS  */
+    MACRO = 281,                   /* MACRO  */
+    AND = 282,                     /* AND  */
+    OR = 283,                      /* OR  */
+    VAR = 284,                     /* VAR  */
+    EOL = 285,                     /* EOL  */
+    CMP = 286,                     /* CMP  */
+    UMINUS = 287                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -101,7 +100,7 @@ union YYSTYPE
     struct var *vr;
     int cmp;
 
-#line 105 "tesina.tab.h"
+#line 104 "tesina.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

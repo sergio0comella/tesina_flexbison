@@ -86,9 +86,10 @@ struct ast *newGet(struct var *vr, int c)
         exit(0);
     }
 
-    if(vr->paziente.cf == NULL) {
-      yyerror("Paziente non istanziato"); 
-    }
+    /*if(vr->varType != NODE_PAZIENTE) {
+      yyerror("NameError: Paziente non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = NODE_GET;
     a->getVal = NULL;
@@ -229,10 +230,10 @@ struct ast *addPaziente(struct var* var, struct ast* paziente)
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");
-      exit(0);  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = NODE_ADD_PAZIENTE;
     a->varReg = var;
@@ -252,9 +253,10 @@ struct ast *getPaziente(struct var* var, struct ast* codFis) {
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = NODE_GETPAZ;
     a->varReg = var;
@@ -274,9 +276,10 @@ struct ast *numPazienti(struct var* var) {
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = NODE_NUMPAZ;
     a->varReg = var;
@@ -296,9 +299,10 @@ struct ast *numPositivi(struct var* var) {
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = NODE_NUMPOS;
     a->varReg = var;
@@ -317,9 +321,10 @@ struct ast *numRicoverati(struct var* var) {
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = NODE_NUMRIC;
     a->varReg = var;
@@ -338,9 +343,10 @@ struct ast *numPositiviByFilter(struct var *var, struct ast* filter) {
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = NODE_PAZIENTE_FILTER;
     a->varReg = var;
@@ -377,9 +383,10 @@ struct ast *import(struct var *var, struct ast *fileUrl) {
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();
+    }*/
 
     a->nodetype = 'J';
     a->varReg = var;
@@ -399,12 +406,47 @@ struct ast *export(struct var *var) {
         exit(0);
     }
 
-    if(var->registro.idReg == 0) {
-      yyerror("Registro non istanziato");  
-    }
+    /*if(var->varType != NODE_REGISTRO) {
+      yyerror("NameError: Registro non istanziato");
+      return newNodeError();  
+    }*/
 
     a->nodetype = 'K';
     a->varReg = var;
+
+    return a;
+
+}
+
+struct ast* newMacro(struct var *vr, struct ast *v) {
+    
+    struct macro *a = malloc(sizeof(struct macro));
+
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    a->noodetype = 'M';
+    a->var = vr;
+    a->v = v;
+
+    return a;
+}
+
+struct ast* newMacroCall(struct var *macrovar) {
+
+    struct macroCall *a = malloc(sizeof(struct macroCall)); 
+    
+    if (!a)
+    {
+        yyerror("out of space");
+        exit(0);
+    }
+
+    a->nodetype = 'A';
+    a->v = macrovar->macro;
 
     return a;
 

@@ -4,11 +4,7 @@ TO DO:
 
 -unione dei registri
 
--Sistemare exp/STRING nella sintassi di import e get
-
--Sistemare operazioni tra STRING
-
-- ELIMINARE DATE
+- ARROTONDARE STAMPA
 
 
 

@@ -60,6 +60,7 @@ struct var *lookup(char *nome)
             variabile->registro.indice = 0;
             variabile->registro.occupato = 0;
             variabile->registro.pazienteSucc = NULL;
+            variabile->macro = NULL;
 
             return variabile;
         }
@@ -95,9 +96,9 @@ void processTree(int print, struct ast *a)
                 printf("\033[0m");
             } else if(risultato.risO.idReg != NULL && risultato.risO.occupato == 1) {
                 stampaRegistro(risultato.risO);
-            } else {
+            } else if(risultato.risD != NaN){
                 printf("\033[0;m");
-                printf(" = %4.4g\n\n", risultato.risD);
+                printf(" = %f\n\n", risultato.risD);
                 printf("\033[0m");
             }
         }  
@@ -106,11 +107,7 @@ void processTree(int print, struct ast *a)
 
 void printNotValidCommand(char *s){
     printf("\033[0;31m");
-    if(s){
-        printf("%s.\n", s);
-    }else{
-        printf("Errore di sintassi, verificare le istruzioni inserite.\n");
-    }
+    printf("%s\n", s);
     printf("\033[0m");
 }
 

@@ -1,3 +1,4 @@
+#define NODE_CALLMACRO 'A'
 #define NODE_NUMPOS 'B'
 #define NODE_NUMRIC 'C'
 #define NODE_DOUBLE 'D'
@@ -9,6 +10,7 @@
 #define NODE_IMPORT 'J'
 #define NODE_EXPORT 'K'
 #define NODE_SEQOP 'L'
+#define NODE_MACRO 'M'
 #define NODE_REGISTRO 'O'
 #define NODE_PAZIENTE 'P'
 #define NODE_REFERENCE 'R'

@@ -19,8 +19,30 @@ struct result eval(struct ast *a)
     risultato.risO.occupato = 0;
     risultato.flagPrint = 0;
     
+    //printf("a->nodetype: %c\n", a->nodetype);
+
     switch (a->nodetype)
     {
+
+    case NODE_CALLMACRO:
+    {
+        //printf("Entrato");
+        risultato = eval(((struct macroCall *)a)->v);
+        risultato.flagPrint = 1;
+        
+        break;
+    }
+
+    /* Generare una macro */
+    case NODE_MACRO:
+    {
+        ((struct macro *)a)->var->varType = NODE_MACRO;
+        ((struct macro *)a)->var->macro = ((struct macro *)a)->v;
+
+        risultato.risD = 0;
+
+        break;
+    }
 
     /* Stampare un valore */
     case NODE_PRINT:
@@ -41,7 +63,7 @@ struct result eval(struct ast *a)
             break;
         }
 
-        printf("Argomento da stampare non valido\n\n");
+        yyerror("Error: Argomento da stampare non valido\n\n");
         risultato.flagPrint = 1;
         break;
     }
@@ -61,11 +83,37 @@ struct result eval(struct ast *a)
     case NODE_PAZIENTE:{
         char *dataTamp = eval(((struct paziente *)a)->dataTamp).risS;
         char *regexDate = REGEX_DATA;
-        if (!match(dataTamp, regexDate)){
-            yyerror("Errore\n");
-            risultato.risS = ("Formato data errato. Formato valido: dd-mm-yyyy.\n");
+        
+        if(findType(eval(((struct paziente *)a)->cf)) != 2) {
+            risultato.flagPrint = 1;
+
+            yyerror("Error: CF wrong type\n");
+
             break;
         }
+
+        if(findType(eval(((struct paziente *)a)->esitoTamp)) != 2) {
+            risultato.flagPrint = 1;
+
+            yyerror("Error: esitoTamp wrong type\n");
+
+            break;
+        }
+
+        if(findType(eval(((struct paziente *)a)->regione)) != 2) {
+            risultato.flagPrint = 1;
+
+            yyerror("Error: regione wrong type\n");
+
+            break;
+        }
+
+        if (!match(dataTamp, regexDate)){
+            yyerror("Errore: Formato data errato. Formato valido: dd-mm-yyyy.\n");
+            risultato.flagPrint = 1;
+            break;
+        }
+
         risultato.risP.cf = eval(((struct paziente *)a)->cf).risS;
         risultato.risP.dataTamp = dataTamp;
         risultato.risP.esitoTamp = eval(((struct paziente *)a)->esitoTamp).risS;
@@ -75,6 +123,16 @@ struct result eval(struct ast *a)
     }
     /* Get valori Paziente */
     case NODE_GET:
+
+        if(((struct get *)a)->getVal == NULL) {
+
+            risultato.flagPrint = 1;
+
+            yyerror("NameError: Paziente non istanziato\n");
+
+            break;
+        }
+
         risultato.risS = ((struct get *)a)->getVal;
         break;
     
@@ -86,18 +144,64 @@ struct result eval(struct ast *a)
 
     /* Aggiunta di un paziente al registro */
     case NODE_ADD_PAZIENTE:
+
+        if(findType(eval(((struct addPaziente *)a)->paziente)) != 3) {
+            
+            risultato.flagPrint = 1;
+
+            yyerror("Error: Paziente wrong type\n");
+
+            break;
+
+        }
+
+        if(((struct addPaziente *)a)->varReg->varType != NODE_REGISTRO) {
+
+            risultato.flagPrint = 1;
+
+            yyerror("NameError: Registro non istanziato\n");
+
+            break;
+        }
+
         if(addPazienteToRegistro(a)){
-            risultato.risS = "Paziente aggiunto con successo";
+            risultato.risS = "Paziente aggiunto con successo\n";
         }else{
-            risultato.risS = "Paziente già inserito in questo registro";
+            
+            risultato.flagPrint = 1;
+
+            yyerror("Paziente già inserito in questo registro\n");
         }
         break;
 
     /* Estrazione di un paziente dal registro dato il codice fiscale */
     case NODE_GETPAZ:
-    {
+    {   
+
+        if(findType(eval(((struct getPaziente *)a)->key)) != 2) {
+            risultato.flagPrint = 1;
+
+            yyerror("Error: CF wrong type\n");
+
+            break;
+        }
+
+        if(((struct getPaziente *)a)->varReg->varType != NODE_REGISTRO) {
+
+            risultato.flagPrint = 1;
+
+            yyerror("NameError: Registro non istanziato\n");
+
+            break;
+        }
+
         if(getPazienteByCf(a).cf == NULL) {
-            risultato.risS = "Paziente non trovato";
+
+           risultato.flagPrint = 1;
+
+           yyerror("Paziente non trovato\n");
+
+
         } else {
             risultato.risP = getPazienteByCf(a);
         }
@@ -107,32 +211,99 @@ struct result eval(struct ast *a)
 
     /* Ottenre il numero di pazienti positivi per regione o per data */
     case NODE_PAZIENTE_FILTER:
+
+        if(findType(eval(((struct numPositiviByFilter *)a)->filter)) != 2) {
+            risultato.flagPrint = 1;
+
+            yyerror("Error: Filter wrong type\n");
+
+            break;
+        }
+
+        if(((struct numPositiviByFilter *)a)->varReg->varType != NODE_REGISTRO) {
+            
+            risultato.flagPrint = 1;
+
+            yyerror("NameError: Registro non istanziato\n");
+
+            break;
+        }
+
         risultato.risD = getPositiviByFilter(a);
         break;
 
     /* Ottenere il numero di pazienti di un registro */
     case NODE_NUMPAZ:
+
+        if(((struct numPazienti *)a)->varReg->varType != NODE_REGISTRO) {
+            
+            risultato.flagPrint = 1;
+            
+            yyerror("NameError: Registro non istanziato\n");
+
+            break;
+        }
+
         risultato.risD = getPazientiTotali(a);
         break;
 
     /* Ottenere il numero di pazienti positivi*/
     case NODE_NUMPOS:
+        
+        if(((struct numPositivi *)a)->varReg->varType != NODE_REGISTRO) {
+
+            risultato.flagPrint = 1;
+
+            yyerror("NameError: Registro non istanziato\n");
+
+            break;
+        }
+
         risultato.risD = getTotalePositivi(a);
         break;
 
     /* Ottenere il numero di pazienti ricoverati */
     case NODE_NUMRIC:
+
+        if(((struct numRicoverati *)a)->varReg->varType != NODE_REGISTRO) {
+
+            risultato.flagPrint = 1;
+
+            yyerror("NameError: Registro non istanziato\n");
+
+            break;
+        }
+
         risultato.risD = getTotaleRicoverati(a);
         break;
 
     /* Importare dati da file esterno */
     case NODE_IMPORT: 
     {    
+        if(((struct importDet *)a)->varReg->varType != NODE_REGISTRO) {
+            risultato.flagPrint = 1;
+            
+            yyerror("NameError: Registro non istanziato\n");
+            
+            break;
+        }
+
+        if(findType(eval(((struct importDet *)a)->fileUrl)) != 2) {
+            risultato.flagPrint = 1;
+
+            yyerror("Error: fileUrl wrong type\n");
+
+            break;
+        }
+
         int result = startImportToRegistro(a);
         if(result > 0){
-            risultato.risS = "Dati importati correttamente.";
+            risultato.risS = "Dati importati correttamente.\n";
         }else{
-            risultato.risS = "Errore nell'import dei dati.";
+            
+            risultato.flagPrint = 1;
+
+            yyerror("Errore nell'import dei dati.\n");
         }
         break;
     }
@@ -140,11 +311,21 @@ struct result eval(struct ast *a)
     /* Export su file*/
     case NODE_EXPORT:
     {
+        if(((struct exportDet *)a)->varReg->varType != NODE_REGISTRO) {
+            
+            risultato.flagPrint = 1;
+            
+            yyerror("NameError: Registro non istanziato\n");
+            
+            break;
+        }
+
         int result = exportRegistroToFile(a);
         if(result > 0){
-            risultato.risS = "Dati esportati correttamente";
+            risultato.risS = "Dati esportati correttamente\n";
         }else{
-            risultato.risS = "Errore nell'export dei dati";
+            risultato.flagPrint = 1;
+            yyerror("Errore nell'export dei dati\n");
         }
         break;
     }
@@ -176,21 +357,6 @@ struct result eval(struct ast *a)
             break;
         }
 
-
-
-        /*if (risAsgn.risD != 0) {
-            risultato.risD = risAsgn.risD;
-            break;
-        } if (risAsgn.risS == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0) {
-            risultato.risP = risAsgn.risP;
-            break;
-        } if (risAsgn.risP.cf == NULL && risAsgn.risD == 0 && risAsgn.risO.idReg == 0) {
-            risultato.risS = risAsgn.risS;
-            break;
-        } if (risAsgn.risO.idReg != 0) {
-            risultato.risO.idReg = risAsgn.risO.idReg;
-            break;
-        }*/
         break;
     }
 
@@ -251,13 +417,15 @@ struct result eval(struct ast *a)
     case '*':
     case '/':
     case '|':
-    case 'M':
+    case 'N':
     case '1':
     case '2':
     case '3':
     case '4':
     case '5':
     case '6':
+    case '7':
+    case '8':
         {
         struct result ris;
 
@@ -302,51 +470,24 @@ struct result evalAsgn(struct ast *a)
 
     if(type == 1) {
         ((struct asgn *)a)->var->varType = NODE_DOUBLE;
-        //risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD;
         risultato.risD = ((struct asgn *)a)->var->valore = risAnnidato.risD;
     }
 
     if(type == 3) {
         ((struct asgn *)a)->var->varType = NODE_PAZIENTE;
         risultato.risP = ((struct asgn *)a)->var->paziente = risAnnidato.risP;
-        //risultato.risP = ((struct asgn *)a)->var->paziente = eval(a->r).risP;
     }
 
     if(type == 2) {
         ((struct asgn *)a)->var->varType = NODE_STRING;
         risultato.risS = ((struct asgn *)a)->var->string = risAnnidato.risS;
-        //risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
     }
 
     if(type == 4) {
         ((struct asgn *)a)->var->varType = NODE_REGISTRO;
-        //risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = eval(a->r).risO.idReg;
         risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = risAnnidato.risO.idReg;
     }
-/*
-    if (risAnnidato.risD != 0) 
-    {
-        ((struct asgn *)a)->var->varType = NODE_DOUBLE;
-        risultato.risD = ((struct asgn *)a)->var->valore = eval(a->r).risD;
-    }
 
-    if (risAnnidato.risS == NULL && risAnnidato.risD == 0 && risAnnidato.risO.idReg == 0) 
-    {
-        ((struct asgn *)a)->var->varType = NODE_PAZIENTE;
-        risultato.risP = ((struct asgn *)a)->var->paziente = eval(a->r).risP;
-    }
-
-    if (risAnnidato.risP.cf == NULL && risAnnidato.risD == 0 && risAnnidato.risO.idReg == 0)
-    {
-        ((struct asgn *)a)->var->varType = NODE_STRING;
-        risultato.risS = ((struct asgn *)a)->var->string = eval(a->r).risS;
-    }
-
-    if (risAnnidato.risO.idReg != 0) {
-        ((struct asgn *)a)->var->varType = NODE_REGISTRO;
-        risultato.risO.idReg = ((struct asgn *)a)->var->registro.idReg = eval(a->r).risO.idReg;
-    }
-*/
     return risultato;
 }
 
@@ -555,6 +696,40 @@ struct result evalExpr(struct ast *a)
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
             risExpr.risD = (int)(strlen(risLeft.risS) <= strlen(risRight.risS));
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+    
+    case '7':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD && risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)(strlen(risLeft.risS) && strlen(risRight.risS));
+            break;
+        }
+        /*if (left == 4 && right == 4) {
+
+        }*/
+        risExpr.risD = 0;
+        break;
+
+    case '8':
+        risLeft = eval(a->l);
+        risRight = eval(a->r);
+        if (findType(risLeft) == 1 && findType(risRight) == 1) {
+            risExpr.risD = (int)(risLeft.risD || risRight.risD);
+            break;
+        }
+        if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            risExpr.risD = (int)(strlen(risLeft.risS) || strlen(risRight.risS));
             break;
         }
         /*if (left == 4 && right == 4) {

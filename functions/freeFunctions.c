@@ -18,13 +18,15 @@ void treefree(struct ast *a)
     case '*':
     case '/':
     case '|':
-    case 'M':
+    case 'N':
     case '1':
     case '2':
     case '3':
     case '4':
     case '5':
     case '6':
+    case '7':
+    case '8':
         treefree(a->l);
         treefree(a->r);
         break;
@@ -97,6 +99,10 @@ void treefree(struct ast *a)
     case NODE_WHILE:
         freeCond((struct cond *) a);
         break;
+    
+    case NODE_MACRO:
+    case NODE_CALLMACRO:
+        break;
 
     default:
         printf("a->nodetype: %c\n", a->nodetype);
@@ -104,7 +110,41 @@ void treefree(struct ast *a)
     }
 }
 
-void freeCond(struct cond * a) {
+void freeError(struct nodeError * a) {
+    
+    if (a == NULL)
+    {
+        return;
+    }
+
+    free(a);
+
+}
+
+
+void freeCallMacro(struct macroCall *a) {
+    
+    if (a == NULL)
+    {
+        return;
+    }
+
+    treefree(a->v);
+    free(a);  
+}
+
+void freeMacro(struct macro *a) {
+    
+    if (a == NULL)
+    {
+        return;
+    }
+
+    treefree(a->v);
+    free(a);
+}
+
+void freeCond(struct cond *a) {
     
     if (a == NULL)
     {
