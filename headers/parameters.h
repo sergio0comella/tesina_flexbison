@@ -10,7 +10,7 @@
 #define NODE_IMPORT 'J'
 #define NODE_EXPORT 'K'
 #define NODE_SEQOP 'L'
-#define NODE_MACRO 'M'
+#define NODE_NEGATIVE 'N'
 #define NODE_REGISTRO 'O'
 #define NODE_PAZIENTE 'P'
 #define NODE_REFERENCE 'R'
@@ -19,6 +19,9 @@
 #define NODE_WHILE 'W'
 #define NODE_NUMPAZ 'Z'
 #define NODE_EQUAL '='
+
+#define NODE_MACRO 'M'
+#define NODE_MACRO_CALL 'A'
 
 #define NaN 9999999
 
