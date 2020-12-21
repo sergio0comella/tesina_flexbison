@@ -75,7 +75,7 @@ struct ast *newref(struct var *vr)
     return (struct ast *)a;
 }
 
-struct ast *newGet(struct var *vr, int c)
+struct ast *newGet(struct var *vr,int c)
 {
 
     struct get *a = malloc(sizeof(struct get));
@@ -86,37 +86,11 @@ struct ast *newGet(struct var *vr, int c)
         exit(0);
     }
 
-    /*if(vr->varType != NODE_PAZIENTE) {
-      yyerror("NameError: Paziente non istanziato");
-      return newNodeError();
-    }*/
 
     a->nodetype = NODE_GET;
-    a->getVal = NULL;
-    char *si = "\"Si\"";
-    char *no = "\"No\"";
+    a->varPaz = vr;
+    a->getVal = c;
 
-    switch (c)
-    {
-    case 1:
-        a->getVal = vr->paziente.cf;
-        break;
-    case 2:
-        a->getVal = vr->paziente.esitoTamp;
-        break;
-    case 3:
-        a->getVal = vr->paziente.dataTamp;
-        break;
-    case 4:
-        a->getVal = vr->paziente.regione;
-        break;
-    case 5:
-        a->getVal = vr->paziente.isRicoverato ? si : no;
-        break;
-    default:
-        a->getVal = "Not found";
-        break;
-    }
 
     return (struct ast *)a;
 }

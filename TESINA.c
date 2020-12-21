@@ -80,7 +80,7 @@ void processTree(int print, struct ast *a)
 {
 
     struct result risultato = eval(a);
-    
+
     if (print == 'P' && risultato.flagPrint == 0)
     {
         if (sizeof(risultato.risS) > 0 && risultato.risS != NULL) {

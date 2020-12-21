@@ -123,18 +123,46 @@ struct result eval(struct ast *a)
     }
     /* Get valori Paziente */
     case NODE_GET:
-
-        /*if(((struct get *)a)->getVal == NULL) {
+    {
+        
+        if(((struct get *)a)->varPaz->varType != NODE_PAZIENTE) {
 
             risultato.flagPrint = 1;
 
             yyerror("NameError: Paziente non istanziato\n");
 
             break;
-        }*/
+        }
+        
+        char *si = "\"Si\"";
+        char *no = "\"No\"";
 
-        risultato.risS = ((struct get *)a)->getVal;
+        int c = ((struct get *)a)->getVal;
+        risultato.risS = ((struct get *)a)->varPaz->paziente.cf;
+        switch (c)
+        {
+        case 1:
+            risultato.risS = ((struct get *)a)->varPaz->paziente.cf;
+            break;
+        case 2:
+            risultato.risS = ((struct get *)a)->varPaz->paziente.esitoTamp;
+            break;
+        case 3:
+            risultato.risS = ((struct get *)a)->varPaz->paziente.dataTamp;
+            break;
+        case 4:
+            risultato.risS = ((struct get *)a)->varPaz->paziente.regione;
+            break;
+        case 5:
+            risultato.risS = ((struct get *)a)->varPaz->paziente.isRicoverato ? si : no;
+            break;
+        default:
+            risultato.flagPrint = 1;
+            break;
+        }
+        
         break;
+    }
     
     /* Inizializzazione registro */
     case NODE_REGISTRO:
@@ -385,6 +413,7 @@ struct result eval(struct ast *a)
 
     /* IF */
     case NODE_IF:
+
         if (eval(((struct cond *)a)->cond).risD != 0)
         {
             risultato = eval(((struct cond *)a)->then);
@@ -430,11 +459,14 @@ struct result eval(struct ast *a)
         struct result ris;
 
         ris = evalExpr(a);
-        if(findType(ris) == 1) {
+        if(ris.risS != NULL) {
+            risultato.flagPrint = ris.flagPrint;
+            risultato.risS = ris.risS;
             risultato.risD = ris.risD;
             break;
         }
-        risultato.risS = ris.risS;
+        risultato.risD = ris.risD;
+        risultato.flagPrint = ris.flagPrint;
         break;
         }
     case NODE_SEQOP:
@@ -626,11 +658,13 @@ struct result evalExpr(struct ast *a)
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
             int temp = (int)(risLeft.risD > risRight.risD);
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
             int temp = (int)(strlen(risLeft.risS) > strlen(risRight.risS));
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
@@ -645,11 +679,13 @@ struct result evalExpr(struct ast *a)
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
             int temp = (int)(risLeft.risD < risRight.risD);
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
             int temp = (int)(strlen(risLeft.risS) < strlen(risRight.risS));
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
@@ -664,11 +700,13 @@ struct result evalExpr(struct ast *a)
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
             int temp = (int)(risLeft.risD != risRight.risD);
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
             int temp = (int)strcmp(risLeft.risS, risRight.risS);
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
@@ -681,13 +719,16 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            int temp = (int)(risLeft.risD == risRight.risD);
-            risExpr.risS = temp ? "true" : "false";
+            int temp = (int)(risLeft.risD > risRight.risD);
+            risExpr.risD = temp;
+            char *ris = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
             int temp = (int)(!strcmp(risLeft.risS, risRight.risS));
-            risExpr.risS = temp ? "true" : "false";
+            risExpr.risD = temp;
+
+            char *ris = temp ? "true" : "false";
             break;
         }
         /*if (left == 4 && right == 4) {
@@ -700,11 +741,13 @@ struct result evalExpr(struct ast *a)
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
             int temp = (int)(risLeft.risD >= risRight.risD);
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
             int temp = (int)(strlen(risLeft.risS) >= strlen(risRight.risS));
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
@@ -718,11 +761,13 @@ struct result evalExpr(struct ast *a)
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
             int temp = (int)(risLeft.risD <= risRight.risD);
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
             int temp = (int)(strlen(risLeft.risS) <= strlen(risRight.risS));
+            risExpr.risD = temp;
             risExpr.risS = temp ? "true" : "false";
             break;
         }

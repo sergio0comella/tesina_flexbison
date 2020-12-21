@@ -27,6 +27,7 @@ struct result {
     struct pazienteDet risP;
     struct registro risO;
     int flagPrint;
+    int flagBoolean;
 };
 
 /* Varibile definita dall'utente che può essere un Double, una String o un Paziente o un Registro */
@@ -88,6 +89,7 @@ struct cond {
 /* Struttura per ottenere i dati del paziente chiesti dalla get */
 struct get {
     int nodetype;
+    struct var *varPaz;
     char *getVal;
 };
 
@@ -183,7 +185,7 @@ struct ast *newasgn(struct var *vr, struct ast *v);                             
 struct ast *newref(struct var* vr);                                                                     // R 
 struct ast *newCmp(int cmptype, struct ast *l, struct ast *r);                                          // 1-6 
 struct ast *newCond(int nodetype, struct ast *, struct ast *, struct ast*);                             // I o W
-struct ast *newGet(struct var *vr,int a);                                                               // G
+struct ast *newGet(struct var *vr,int c);                                                               // G
 //P
 struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp,struct ast *esitoTamp, struct ast *regione, struct ast *isRicoverato);
 //O

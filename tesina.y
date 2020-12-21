@@ -71,6 +71,7 @@ macroOp:
 ;
 
 stmtBlock: stmt EOL
+    | condExp EOL
     | stmtBlock stmt EOL           { $$ = newast('L', $1, $2); }
     | stmtBlock condExp EOL        { $$ = newast('L', $1,$2); }
 ;

@@ -20,7 +20,7 @@ EXP ([Ee][-+]?[0-9]+)
 "GETCF"           { return CF; }
 "GETDATATAMP"     { return DATATAMP; }
 "GETESITOTAMP"    { return ESITOTAMP; }
-"GETREGIONE"          { return REGIONE; }
+"GETREGIONE"      { return REGIONE; }
 "ISRIC"           { return ISRIC; }         /* Paziente e rispettivi "metodi" */
 
 "REGISTRO" { return REGISTRO; } 
@@ -57,7 +57,7 @@ EXP ([Ee][-+]?[0-9]+)
 "}" |
 ")" { return yytext[0]; }                   /* Operatori aritmetici */
 
-"\""[a-zA-Z0-9" "\-"_"""/""."]+"\"" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
+\"[a-zA-Z0-9 \-\_\\\.]+\" {yylval.string = malloc(sizeof(char)*strlen(yytext) + 1); 
                         strcpy(yylval.string,yytext); return STRING; }  /* String */
 
 

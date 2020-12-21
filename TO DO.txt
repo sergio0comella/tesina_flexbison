@@ -10,10 +10,12 @@ TO DO:
 - OPERAZIONI TRA PAZVAR
 - RICONTROLLARE MACRO
 
+- CAMBIATO REGEX STRINGA, SE NASCONO PROBLEMI CON LE STRINGHE CONTROLLARE QUELLO
 
 
 
 
+IF paziente2.GETCF == "CMLSRG97C28B780E": STAMPA: "Uguale"
 
   pazienteERR1 = PAZIENTE("CMLSRG","11-08-2020",6,"Sicilia",0);
   pazienteERR2 = PAZIENTE(1,"11-08-2020","POsItivo","Sicilia",0);
@@ -23,22 +25,31 @@ TO DO:
   paziente2 = PAZIENTE("CMLSRG97C28B780E","11-02-1997","Positivo","Sicilia",1)
   paziente3 = PAZIENTE("DGVmrC97P11G273M","11-08-2020","Positivo","Sicilia",1) 
   paziente4 = PAZIENTE("DGV73M","11-08-2020","Negativo","Sicilia",1)
-  paziente5 = PAZIENTE("AAA","11-04-1997","Positivo","Sicilia",0)
+  paziente = PAZIENTE("AAA","11-04-1997","Positivo","Sicilia",0)
   paziente6 = PAZIENTE("BBB","11-10-1990","Positivo","Sicilia",0)
   paziente7 = PAZIENTE("CCC","11-08-2020","Positivo","Sicilia",1) 
-  paziente8 = PAZIENTE("DDD","11-08-2020","Negativo","Sicilia",1)
+  paziente = PAZIENTE("DDD","11-08-2020","Negativo","Sicilia",1)
   paziente9 = PAZIENTE("ffff","11-08-2020","Positivo","Lombardia",0)
-  
+
+  IF paziente.GETCF == "DGV73M": STAMPA: "Uguale" ELSE STAMPA: "Diverso"
+
+  IF paziente.GETESITOTAMP == "Positivo": STAMPA: "Paziente positivo in data"; STAMPA: paziente.GETDATATAMP
+
+DEF print {
+IF paziente.GETESITOTAMP == "Positivo": STAMPA: "Paziente positivo in data"; STAMPA: paziente.GETDATATAMP
+}
+
+DEF macro {
+STAMPA: paziente.GETESITOTAMP
+}
 
     r=REGISTRO()
     r.ADD(paziente3)
     r.ADD(paziente5)
     r.POSIN("11-08-2020")
 
+--- TO DO --- DOCUMENTAZIONE
+
+- Nella parte in cui si parlerà delle macro inserire il concetto di legame DINAMICO (SLIDE 3_LEGAMI)
 
 
-while(EOF != fscanf(file, ))
-
-
-!!WARN
-In import registro funziona ma viene mostrato "Errore inerno di liberazione memoria"
