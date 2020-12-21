@@ -417,7 +417,7 @@ struct result eval(struct ast *a)
     case '*':
     case '/':
     case '|':
-    case 'N':
+    case NODE_NEGATIVE:
     case '1':
     case '2':
     case '3':
@@ -519,7 +519,7 @@ struct result evalExpr(struct ast *a)
    switch (a->nodetype)
    {
     
-   case 'M':
+   case NODE_NEGATIVE:
         risLeft = eval(a->l);
         if (findType(risLeft) == 1) {
             risExpr.risD = -risLeft.risD;
@@ -536,14 +536,23 @@ struct result evalExpr(struct ast *a)
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
+            
+            //Lavoro su elementi temporanei per non alterare i nodi
+            int lenLeft = strlen(risLeft.risS);
+            int lenRight = strlen(risRight.risS);
+
+            char *left = (char *)malloc(lenLeft + 1);
+            char *right = (char *)malloc(lenRight + 1);
+
+            strcpy(left, risLeft.risS);
+            strcpy(right, risRight.risS);
 
             //rimuove l'ultimo carattere della stringa (")
-            int size = strlen(risLeft.risS); 
-            risLeft.risS[size - 1] = '\0';
+            left[lenLeft - 1] = '\0';
             //rimuovo il primo carattere della stringa (")
-            memmove(risRight.risS, risRight.risS + 1, strlen(risRight.risS));
+            memmove(right, right + 1, lenRight);
 
-            risExpr.risS = strcat(risLeft.risS,risRight.risS);
+            risExpr.risS = strcat(left,right);
             break;
         }
         risExpr.risD = 0;
@@ -557,7 +566,14 @@ struct result evalExpr(struct ast *a)
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
-            risExpr.risD = strlen(risLeft.risS) - strlen(risRight.risS);
+            int lenLeft = strlen(risLeft.risS);
+            int lenRight = strlen(risRight.risS);
+            //Restituisco sempre la differenze positive delle due stringhe
+            if(lenLeft > lenRight){
+                risExpr.risD = strlen(risLeft.risS) - strlen(risRight.risS);
+            }else{
+                risExpr.risD = strlen(risRight.risS) - strlen(risLeft.risS);
+            }
             break;
         }
         risExpr.risD = 0;
@@ -609,11 +625,13 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = (int)(risLeft.risD > risRight.risD);
+            int temp = (int)(risLeft.risD > risRight.risD);
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
-            risExpr.risD = (int)(strlen(risLeft.risS) > strlen(risRight.risS));
+            int temp = (int)(strlen(risLeft.risS) > strlen(risRight.risS));
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         /*if (left == 4 && right == 4) {
@@ -626,11 +644,13 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = (int)(risLeft.risD < risRight.risD);
+            int temp = (int)(risLeft.risD < risRight.risD);
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
-            risExpr.risD = (int)(strlen(risLeft.risS) < strlen(risRight.risS));
+            int temp = (int)(strlen(risLeft.risS) < strlen(risRight.risS));
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         /*if (left == 4 && right == 4) {
@@ -643,11 +663,13 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = (int)(risLeft.risD != risRight.risD);
+            int temp = (int)(risLeft.risD != risRight.risD);
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
-            risExpr.risD = (int)strcmp(risLeft.risS,risRight.risS);
+            int temp = (int)strcmp(risLeft.risS, risRight.risS);
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         /*if (left == 4 && right == 4) {
@@ -659,11 +681,13 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = (int)(risLeft.risD == risRight.risD);
+            int temp = (int)(risLeft.risD == risRight.risD);
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
-            risExpr.risD = (int)(!strcmp(risLeft.risS,risRight.risS));
+            int temp = (int)(!strcmp(risLeft.risS, risRight.risS));
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         /*if (left == 4 && right == 4) {
@@ -675,11 +699,13 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = (int)(risLeft.risD >= risRight.risD);
+            int temp = (int)(risLeft.risD >= risRight.risD);
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
-            risExpr.risD = (int)(strlen(risLeft.risS) >= strlen(risRight.risS));
+            int temp = (int)(strlen(risLeft.risS) >= strlen(risRight.risS));
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         /*if (left == 4 && right == 4) {
@@ -691,11 +717,13 @@ struct result evalExpr(struct ast *a)
         risLeft = eval(a->l);
         risRight = eval(a->r);
         if (findType(risLeft) == 1 && findType(risRight) == 1) {
-            risExpr.risD = (int)(risLeft.risD <= risRight.risD);
+            int temp = (int)(risLeft.risD <= risRight.risD);
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         if (findType(risLeft) == 2 && findType(risRight) == 2) {
-            risExpr.risD = (int)(strlen(risLeft.risS) <= strlen(risRight.risS));
+            int temp = (int)(strlen(risLeft.risS) <= strlen(risRight.risS));
+            risExpr.risS = temp ? "true" : "false";
             break;
         }
         /*if (left == 4 && right == 4) {

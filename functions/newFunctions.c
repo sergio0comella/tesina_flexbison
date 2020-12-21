@@ -366,7 +366,7 @@ struct ast *newPrint(struct ast *val) {
         exit(0);
     }
 
-    a->nodetype = 'H';
+    a->nodetype = NODE_PRINT;
     a->val = val;
     
     return a;
@@ -388,7 +388,7 @@ struct ast *import(struct var *var, struct ast *fileUrl) {
       return newNodeError();
     }*/
 
-    a->nodetype = 'J';
+    a->nodetype = NODE_IMPORT;
     a->varReg = var;
     a->fileUrl = fileUrl;
 
@@ -411,7 +411,7 @@ struct ast *export(struct var *var) {
       return newNodeError();  
     }*/
 
-    a->nodetype = 'K';
+    a->nodetype = NODE_EXPORT;
     a->varReg = var;
 
     return a;
@@ -428,7 +428,7 @@ struct ast* newMacro(struct var *vr, struct ast *v) {
         exit(0);
     }
 
-    a->noodetype = 'M';
+    a->noodetype = NODE_MACRO;
     a->var = vr;
     a->v = v;
 
@@ -445,7 +445,7 @@ struct ast* newMacroCall(struct var *macrovar) {
         exit(0);
     }
 
-    a->nodetype = 'A';
+    a->nodetype = NODE_MACRO_CALL;
     a->v = macrovar->macro;
 
     return a;

@@ -295,7 +295,7 @@ int startImportToRegistro(struct ast *a){
     for(int j = 0; j < data; j++) {
         int r = importToRegistro(records[j],a);
         if( r == 0) {
-            yyerror("Error: Inserimento di un duplicato\n");
+            yyerror("Warning: Codice fiscale già presente ( %s )\n", records[j].cf);
         }
     }
 
