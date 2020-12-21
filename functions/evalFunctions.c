@@ -124,14 +124,14 @@ struct result eval(struct ast *a)
     /* Get valori Paziente */
     case NODE_GET:
 
-        if(((struct get *)a)->getVal == NULL) {
+        /*if(((struct get *)a)->getVal == NULL) {
 
             risultato.flagPrint = 1;
 
             yyerror("NameError: Paziente non istanziato\n");
 
             break;
-        }
+        }*/
 
         risultato.risS = ((struct get *)a)->getVal;
         break;

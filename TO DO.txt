@@ -2,12 +2,6 @@ TO DO:
 
 -Capire casting tra struct
 
--unione dei registri
-
-- ARROTONDARE STAMPA
-
-
-
 
 
 paziente3 = PAZIENTE("CMLSRG","11Set1997","Positivo","Sicilia",0)
