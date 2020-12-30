@@ -83,7 +83,7 @@ struct result eval(struct ast *a)
             break;
         }
 
-        yyerror("Error: Argomento da stampare non valido\n\n");
+        printNotValidCommand("GenericError: Argomento da stampare non valido\n\n");
         risultato.flagPrint = 1;
         break;
     }
@@ -107,7 +107,7 @@ struct result eval(struct ast *a)
         if(findType(eval(((struct paziente *)a)->cf)) != 2) {
             risultato.flagPrint = 1;
 
-            yyerror("Error: CF wrong type\n");
+            printNotValidCommand("GenericError: CF wrong type\n");
 
             break;
         }
@@ -115,7 +115,7 @@ struct result eval(struct ast *a)
         if(findType(eval(((struct paziente *)a)->esitoTamp)) != 2) {
             risultato.flagPrint = 1;
 
-            yyerror("Error: esitoTamp wrong type\n");
+            printNotValidCommand("GenericError: esitoTamp wrong type\n");
 
             break;
         }
@@ -123,13 +123,13 @@ struct result eval(struct ast *a)
         if(findType(eval(((struct paziente *)a)->regione)) != 2) {
             risultato.flagPrint = 1;
 
-            yyerror("Error: regione wrong type\n");
+            printNotValidCommand("GenericError: regione wrong type\n");
 
             break;
         }
 
         if (!match(dataTamp, regexDate)){
-            yyerror("Errore: Formato data errato. Formato valido: dd-mm-yyyy.\n");
+            printNotValidCommand("GenericError: Formato data errato. Formato valido: dd-mm-yyyy.\n");
             risultato.flagPrint = 1;
             break;
         }
@@ -149,7 +149,7 @@ struct result eval(struct ast *a)
 
             risultato.flagPrint = 1;
 
-            yyerror("NameError: Paziente non istanziato\n");
+            printNotValidCommand("NameError: Paziente non istanziato\n");
 
             break;
         }
@@ -197,7 +197,7 @@ struct result eval(struct ast *a)
             
             risultato.flagPrint = 1;
 
-            yyerror("Error: Paziente wrong type\n");
+            printNotValidCommand("GenericError: Paziente wrong type\n");
 
             break;
 
@@ -207,7 +207,7 @@ struct result eval(struct ast *a)
 
             risultato.flagPrint = 1;
 
-            yyerror("NameError: Registro non istanziato\n");
+            printNotValidCommand("NameError: Registro non istanziato\n");
 
             break;
         }
@@ -218,7 +218,7 @@ struct result eval(struct ast *a)
             
             risultato.flagPrint = 1;
 
-            yyerror("Paziente già inserito in questo registro\n");
+            printNotValidCommand("GenericError: Paziente già inserito in questo registro\n");
         }
         break;
 
@@ -229,7 +229,7 @@ struct result eval(struct ast *a)
         if(findType(eval(((struct getPaziente *)a)->key)) != 2) {
             risultato.flagPrint = 1;
 
-            yyerror("Error: CF wrong type\n");
+            printNotValidCommand("GenericError: CF wrong type\n");
 
             break;
         }
@@ -238,7 +238,7 @@ struct result eval(struct ast *a)
 
             risultato.flagPrint = 1;
 
-            yyerror("NameError: Registro non istanziato\n");
+            printNotValidCommand("NameError: Registro non istanziato\n");
 
             break;
         }
@@ -247,8 +247,7 @@ struct result eval(struct ast *a)
 
            risultato.flagPrint = 1;
 
-           yyerror("Paziente non trovato\n");
-
+           printNotValidCommand("GenericError: Paziente non trovato\n");
 
         } else {
             risultato.risP = getPazienteByCf(a);
@@ -263,7 +262,7 @@ struct result eval(struct ast *a)
         if(findType(eval(((struct numPositiviByFilter *)a)->filter)) != 2) {
             risultato.flagPrint = 1;
 
-            yyerror("Error: Filter wrong type\n");
+            printNotValidCommand("Error: Filter wrong type\n");
 
             break;
         }
@@ -272,7 +271,7 @@ struct result eval(struct ast *a)
             
             risultato.flagPrint = 1;
 
-            yyerror("NameError: Registro non istanziato\n");
+            printNotValidCommand("NameError: Registro non istanziato\n");
 
             break;
         }
@@ -287,7 +286,7 @@ struct result eval(struct ast *a)
             
             risultato.flagPrint = 1;
             
-            yyerror("NameError: Registro non istanziato\n");
+            printNotValidCommand("NameError: Registro non istanziato\n");
 
             break;
         }
@@ -302,7 +301,7 @@ struct result eval(struct ast *a)
 
             risultato.flagPrint = 1;
 
-            yyerror("NameError: Registro non istanziato\n");
+            printNotValidCommand("NameError: Registro non istanziato\n");
 
             break;
         }
@@ -317,7 +316,7 @@ struct result eval(struct ast *a)
 
             risultato.flagPrint = 1;
 
-            yyerror("NameError: Registro non istanziato\n");
+            printNotValidCommand("NameError: Registro non istanziato\n");
 
             break;
         }
@@ -330,16 +329,16 @@ struct result eval(struct ast *a)
     {    
         if(((struct importDet *)a)->varReg->varType != NODE_REGISTRO) {
             risultato.flagPrint = 1;
-            
-            yyerror("NameError: Registro non istanziato\n");
-            
+
+            printNotValidCommand("NameError: Registro non istanziato\n");
+
             break;
         }
 
         if(findType(eval(((struct importDet *)a)->fileUrl)) != 2) {
             risultato.flagPrint = 1;
 
-            yyerror("Error: fileUrl wrong type\n");
+            printNotValidCommand("GenericError: fileUrl wrong type\n");
 
             break;
         }
@@ -348,10 +347,8 @@ struct result eval(struct ast *a)
         if(result > 0){
             risultato.risS = "Dati importati correttamente.\n";
         }else{
-            
             risultato.flagPrint = 1;
-
-            yyerror("Errore nell'import dei dati.\n");
+            printNotValidCommand("GenericError: Errore nell'import dei dati.\n");
         }
         break;
     }
@@ -363,7 +360,7 @@ struct result eval(struct ast *a)
             
             risultato.flagPrint = 1;
             
-            yyerror("NameError: Registro non istanziato\n");
+            printNotValidCommand("NameError: Registro non istanziato\n");
             
             break;
         }
@@ -373,7 +370,7 @@ struct result eval(struct ast *a)
             risultato.risS = "Dati esportati correttamente\n";
         }else{
             risultato.flagPrint = 1;
-            yyerror("Errore nell'export dei dati\n");
+            printNotValidCommand("GenericError: Errore nell'export dei dati\n");
         }
         break;
     }
@@ -495,7 +492,7 @@ struct result eval(struct ast *a)
         break;
 
     default:
-        printf("Errore interno di valutazione - nodetype: %d", a->nodetype);
+        printf("GenericError: Errore interno di valutazione - nodetype: %d", a->nodetype);
     }
     return risultato;
 }

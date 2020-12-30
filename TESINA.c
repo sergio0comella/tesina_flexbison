@@ -70,7 +70,7 @@ struct var *lookup(char *nome)
             variabile = vartab;
     }
 
-    yyerror("Overflow tabella variabili\n");
+    printNotValidCommand("Overflow tabella variabili\n");
     abort();
 }
 
@@ -113,14 +113,7 @@ void printNotValidCommand(char *s){
 
 void yyerror(char *s, ...)
 {
-    //va_list ap;
-    //va_start(ap, s);
-    //fprintf(stderr, "\033[0;31m");
-    //fprintf(stderr, "%d: error: ", yylineno);
-    //vfprintf(stderr, s, ap);
-    //fprintf(stderr, "\n");
-    //fprintf(stderr,"\033[0m");
-    printNotValidCommand(s);
+    printNotValidCommand("Errore di sintassi: Comando non riconosciuto.");
 }
 
 int match(const char *string, const char *pattern)
