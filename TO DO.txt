@@ -18,7 +18,7 @@ TO DO:
 IF paziente2.GETCF == "CMLSRG97C28B780E": STAMPA: "Uguale"
 
   pazienteERR1 = PAZIENTE("CMLSRG","11-08-2020",6,"Sicilia",0);
-  pazienteERR2 = PAZIENTE(1,"11-08-2020","POsItivo","Sicilia",0);
+  pazienteERR2 = PAZIENTE("CMLSRG","11-08-2020","POsItivo","Sicilia",0);
   pazienteERR3 = PAZIENTE("CMLSRG","11settqua","negativo","Sicilia",0);
   pazienteERR4 = PAZIENTE("CMLSRG","11-08-2020","Positivo",5+3,0);
 

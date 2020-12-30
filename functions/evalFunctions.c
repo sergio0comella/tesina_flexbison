@@ -63,6 +63,26 @@ struct result eval(struct ast *a)
             break;
         }
 
+        if (print.risP.cf != NULL){
+            stampaPaziente(print.risP);
+            risultato.flagPrint = 1;
+            break;
+        }
+
+        if (print.risO.idReg != NULL && print.risO.occupato == 1){
+            stampaRegistro(print.risO);
+            risultato.flagPrint = 1;
+            break;
+        }
+
+        if (print.risO.idReg != NULL && print.risO.occupato == 0){
+            printf("\033[0;32m");
+            printf("Registro vuoto.\n\n");
+            printf("\033[0m");
+            risultato.flagPrint = 1;
+            break;
+        }
+
         yyerror("Error: Argomento da stampare non valido\n\n");
         risultato.flagPrint = 1;
         break;
