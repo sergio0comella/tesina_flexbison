@@ -218,6 +218,7 @@ struct ast* newMacroCall(struct var *macrovar);
 void processTree(int,struct ast *);
 void stampaRegistro(struct registro risO);
 void stampaPaziente(struct pazienteDet risP);
+void printNotValidCommand(char *s);
 struct result eval(struct ast *a);
 struct result evalExpr(struct ast *a);
 struct result evalAsgn(struct ast *a);

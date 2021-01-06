@@ -24,7 +24,7 @@ int addPazienteToRegistro(struct ast *a)
     struct pazienteDet pazTemp = eval(((struct addPaziente *)a)->paziente).risP;
 
     if (pazTemp.cf == NULL) {
-        yyerror("Paziente non istanziato\n");
+        printNotValidCommand("NameError: Paziente non istanziato\n");
         exit(0);
     }
 
@@ -42,6 +42,9 @@ int addPazienteToRegistro(struct ast *a)
     struct registro *lastPaziente = &((struct addPaziente *)a)->varReg->registro;
     while (lastPaziente->pazienteSucc != NULL) {
         if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+            printf("\033[1;33m");
+            printf("Warning: Codice fiscale già presente ( %s )\n", pazTemp.cf);
+            printf("\033[0m");
             return 0;       
        }
 
@@ -50,6 +53,9 @@ int addPazienteToRegistro(struct ast *a)
     }
     /*controllo anche l'ultimo elemento che viene escluso dal while*/
     if(!strcasecmp(lastPaziente->paziente.cf, pazTemp.cf)){
+        printf("\033[1;33m");
+        printf("Warning: Codice fiscale già presente ( %s )\n", pazTemp.cf);
+        printf("\033[0m");
         return 0;
     }
 
@@ -179,7 +185,7 @@ int getPositiviByFilter(struct ast *a){
     else if(match(filter, regexCountry)){
         filterForCountry = 1;
     }else{
-        printf("Inserimento errato");
+        printNotValidCommand("GenericError: Filtro non valido\n");
         return 0;
     }
 
@@ -208,7 +214,9 @@ int getPositiviByFilter(struct ast *a){
     }
     
     if(counter == 0){
-        printf("Nessun paziente trovato con i criteri ricercati.");
+        printf("\033[1;33m");
+        printf("Warning: Nessun paziente trovato con i criteri ricercati.");
+        printf("\033[0m");
     }
     return counter;
 }
@@ -235,7 +243,7 @@ int startImportToRegistro(struct ast *a){
     f = fopen(fileUrl, "r");
 
     if(!f) {
-        yyerror("Problema lettura file\n");
+        printNotValidCommand("Problema lettura file\n");
         return 0;
     }
 
@@ -273,7 +281,7 @@ int startImportToRegistro(struct ast *a){
                     isRicoverato = atoi(strdup(tok));
                     break;
                 default:
-                    yyerror("Errore switch case records-tok");
+                    printNotValidCommand("Errore switch case records-tok");
             }
 
             field++;
@@ -295,7 +303,9 @@ int startImportToRegistro(struct ast *a){
     for(int j = 0; j < data; j++) {
         int r = importToRegistro(records[j],a);
         if( r == 0) {
-            yyerror("Warning: Codice fiscale già presente ( %s )\n", records[j].cf);
+            printf("\033[1;33m");
+            printf("Warning: Codice fiscale già presente ( %s )\n", records[j].cf);
+            printf("\033[0m");
         }
     }
 
@@ -357,7 +367,7 @@ int exportRegistroToFile(struct ast *a){
 
     if (!f)
     {
-        yyerror("Problema apertura file\n");
+        printNotValidCommand("Problema apertura file\n");
     }
 
     Registro *iter;

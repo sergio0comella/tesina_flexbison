@@ -13,7 +13,7 @@ struct ast *newast(int nodetype, struct ast *l, struct ast *r)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -31,7 +31,7 @@ struct ast *newnum(double d)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -48,7 +48,7 @@ struct ast *newString(char *string)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -65,7 +65,7 @@ struct ast *newref(struct var *vr)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -82,7 +82,7 @@ struct ast *newGet(struct var *vr,int c)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -102,7 +102,7 @@ struct ast *newasgn(struct var *vr, struct ast *v)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -120,7 +120,7 @@ struct ast *newCmp(int cmptype, struct ast *l, struct ast *r)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -138,7 +138,7 @@ struct ast *newCond(int nodetype, struct ast *cond, struct ast *then, struct ast
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -157,7 +157,7 @@ struct ast *newPaziente(int nodetype, struct ast *cf, struct ast *dataTamp, stru
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -182,7 +182,7 @@ struct ast *newRegistro(int nodetype) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -200,12 +200,12 @@ struct ast *addPaziente(struct var* var, struct ast* paziente)
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();
     }*/
 
@@ -223,12 +223,12 @@ struct ast *getPaziente(struct var* var, struct ast* codFis) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();
     }*/
 
@@ -246,12 +246,12 @@ struct ast *numPazienti(struct var* var) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();
     }*/
 
@@ -269,12 +269,12 @@ struct ast *numPositivi(struct var* var) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();
     }*/
 
@@ -291,12 +291,12 @@ struct ast *numRicoverati(struct var* var) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();
     }*/
 
@@ -313,12 +313,12 @@ struct ast *numPositiviByFilter(struct var *var, struct ast* filter) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();
     }*/
 
@@ -336,7 +336,7 @@ struct ast *newPrint(struct ast *val) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -353,12 +353,12 @@ struct ast *import(struct var *var, struct ast *fileUrl) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();
     }*/
 
@@ -376,12 +376,12 @@ struct ast *export(struct var *var) {
     
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
     /*if(var->varType != NODE_REGISTRO) {
-      yyerror("NameError: Registro non istanziato");
+      printNotValidCommand("NameError: Registro non istanziato");
       return newNodeError();  
     }*/
 
@@ -398,7 +398,7 @@ struct ast* newMacro(struct var *vr, struct ast *v) {
 
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
@@ -415,7 +415,7 @@ struct ast* newMacroCall(struct var *macrovar) {
     
     if (!a)
     {
-        yyerror("out of space");
+        printNotValidCommand("out of space");
         exit(0);
     }
 
